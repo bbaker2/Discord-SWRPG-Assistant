@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>bbaker.discord.swrpg</groupId>
@@ -6,16 +7,28 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SWRPG Assistant Bot</name>
 	<description>A tool for players and GMs on Discord</description>
+
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+<!-- 		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
+		<!-- <outputDirectory>${basedir}/target/classes</outputDirectory>
+		<testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory> -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
 				<configuration>
-					<release>9</release>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
@@ -31,12 +44,24 @@
 		</repository>
 	</repositories>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jdbi</groupId>
+				<artifactId>jdbi3-bom</artifactId>
+				<type>pom</type>
+				<version>3.0.1</version>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
-			<groupId>de.btobastian</groupId>
-			<artifactId>Javacord</artifactId>
-			<version>8ded4aa</version>
-			<scope>provided</scope>
+			<groupId>org.javacord</groupId>
+			<artifactId>javacord</artifactId>
+			<version>3.0.0</version>
+			<type>pom</type>
 		</dependency>
 
 		<dependency>
@@ -48,13 +73,51 @@
 		<dependency>
 			<groupId>de.btobastian.sdcf4j</groupId>
 			<artifactId>sdcf4j-core</artifactId>
-			<version>v1.0.9</version>
+			<version>v1.0.10</version>
 		</dependency>
 
 		<dependency>
 			<groupId>de.btobastian.sdcf4j</groupId>
 			<artifactId>sdcf4j-javacord</artifactId>
-			<version>v1.0.9</version>
+			<version>v1.0.10</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.196</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdbi</groupId>
+			<artifactId>jdbi3-bom</artifactId>
+			<type>pom</type>
+			<version>3.0.1</version>
+			<scope>import</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdbi</groupId>
+			<artifactId>jdbi3-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdbi</groupId>
+			<artifactId>jdbi3-sqlobject</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.1.0</version>
+			<scope>test</scope>
+		</dependency>
+		
 	</dependencies>
 </project>
