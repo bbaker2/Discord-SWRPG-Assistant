@@ -1,6 +1,8 @@
 package com.bbaker.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -42,14 +44,34 @@ public class JdbiServiceTest {
 	}
 	
 	@AfterEach
-	public void closeDatabase() {
+	public void dropAllTables() {
 		dbService.getJdbi().withHandle(handle -> 
 			handle.execute("DROP  ALL OBJECTS"));
 	}
 	
 	@Test
+	public void testBadTableCreation() {
+		Properties testProperties = new Properties();
+		testProperties.setProperty("url", 	 "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+		testProperties.setProperty("prefix", "");
+		
+		assertThrows(SetupException.class, () -> new JdbiService(testProperties), "Empty prefixes are not allowed");
+		
+		testProperties.setProperty("prefix", "omg");
+		assertThrows(SetupException.class, () -> new JdbiService(testProperties), "Must contain correctly structured ");
+		
+		testProperties.setProperty("prefix", "omg_");
+		try {
+			new JdbiService(testProperties);
+		} catch (SetupException e) {
+			fail(e);
+		}
+	}
+	
+	@Test
 	public void testTableCreation() {
 		assertTrue(dbService.hasTable(JdbiService.TABLE_ROLL), "Make sure the dice roll table survived.");
+		assertFalse(dbService.createTables(), "The table was already created. It should not be created again");
 	}
 	
 	@Test 

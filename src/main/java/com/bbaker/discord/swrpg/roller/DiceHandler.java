@@ -1,23 +1,28 @@
 package com.bbaker.discord.swrpg.roller;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.bbaker.discord.swrpg.ArgumentHandler;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.table.Table;
+import com.bbaker.exceptions.BadArgumentException;
 
-public class RollerHandler implements ArgumentHandler {
+public abstract class DiceHandler implements ArgumentHandler {
+
     private static final Pattern diceRgx = Pattern.compile("(\\d+)?([A-Za-z]+)(\\d+)?");
     private static final int LEFT_COUNT = 1;
     private static final int DIE_TOKEN = 2;
     private static final int RIGHT_COUNT = 3;
 
+    public abstract boolean evaluate(Table table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) throws BadArgumentException;
+
     @Override
-    public boolean processArguments(Iterator<String> args, Table table) {
+    public boolean processArguments(Iterator<String> args, Table table) throws BadArgumentException {
         boolean allRemoved = true;
-        Matcher m; DieType dieType; int count;
+        Matcher m; DieType dieType; Optional<Integer> leftNum; Optional<Integer> rightNum; boolean success;
         while(args.hasNext()) {
             m = diceRgx.matcher(args.next());
 
@@ -32,36 +37,20 @@ public class RollerHandler implements ArgumentHandler {
                         allRemoved = false;
                     }
                 } else {
-                    count = getQuanity(m);
-                    table.adjustDice(dieType, count);
-                    args.remove(); // remove since a die was found
+                    leftNum = getCount(m.group(LEFT_COUNT)); // left side numeric
+                    rightNum = getCount(m.group(RIGHT_COUNT)); // right side numeric
+
+                    success = evaluate(table, dieType, leftNum, rightNum);
+
+                    if(success) {
+                        args.remove(); // remove since a die was found
+                    } else {
+                        allRemoved = false;
+                    }
                 }
             }
         }
         return allRemoved;
-    }
-
-    private int getQuanity(Matcher m) {
-        int count = 0;
-        boolean useDefault = true;
-        String numStr;
-
-        if((numStr = m.group(LEFT_COUNT)) != null) {
-            count += getCount(numStr); // left side numeric
-            useDefault = false;
-        }
-
-        if((numStr = m.group(RIGHT_COUNT)) != null) {
-            count += getCount(numStr); // right side numeric
-            useDefault = false;
-        }
-
-        // If no count was provided, assume 1
-        if(useDefault) {
-            count = 1;
-        }
-
-        return count;
     }
 
     /**
@@ -70,8 +59,9 @@ public class RollerHandler implements ArgumentHandler {
      * @param value the string that will be split up by character
      * @param table the table to update
      * @return TRUE if ALL characters can be converted to a die. Otherwise FALSE
+     * @throws BadArgumentException
      */
-    private boolean tryAgain(String value, Table table) {
+    private boolean tryAgain(String value, Table table) throws BadArgumentException {
         char[] splitUp = value.toCharArray();
         DieType[] foundDice = new DieType[splitUp.length];
         DieType dieType;
@@ -84,8 +74,8 @@ public class RollerHandler implements ArgumentHandler {
             }
         }
 
-        for(DieType td : foundDice) {
-            table.adjustDice(td, 1);
+        for(DieType dt : foundDice) {
+            evaluate(table, dt, Optional.empty(), Optional.empty());
         }
         return true;
     }
@@ -169,12 +159,17 @@ public class RollerHandler implements ArgumentHandler {
      * @param val
      * @return the numeric value of a string. 0 if unsuccessful for any reason
      */
-    private int getCount(String val) {
+    private Optional<Integer> getCount(String val) {
+        if(val == null) {
+            return Optional.empty();
+        }
+
         try {
-            return Integer.valueOf(val);
+            return Optional.of(Integer.valueOf(val));
         } catch (NumberFormatException e) {
-            return 0;
+            return Optional.empty();
         }
     }
+
 
 }

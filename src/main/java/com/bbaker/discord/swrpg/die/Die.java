@@ -47,7 +47,7 @@ public interface Die {
 	// Adjustment Die, used for adjust the TableResult
 	public static final Die SUCCESS = 	new Adjustment(DieType.SUCCESS, 	new DieFaceBuilder(DieType.SUCCESS).success().getFace());
 	public static final Die ADVANTAGE = 	new Adjustment(DieType.ADVANTAGE, 	new DieFaceBuilder(DieType.ADVANTAGE).advantage().getFace());
-	public static final Die TRIUMPH = 	new Adjustment(DieType.TRIMPH, 		new DieFaceBuilder(DieType.TRIMPH).triumph().getFace());
+	public static final Die TRIUMPH = 	new Adjustment(DieType.TRIUMPH, 		new DieFaceBuilder(DieType.TRIUMPH).triumph().getFace());
 	public static final Die FAILURE = 	new Adjustment(DieType.FAILURE, 	new DieFaceBuilder(DieType.FAILURE).failure().getFace());
 	public static final Die THREAT = 	new Adjustment(DieType.THREAT, 		new DieFaceBuilder(DieType.THREAT).threat().getFace());
 	public static final Die DESPAIR = 	new Adjustment(DieType.DESPAIR, 	new DieFaceBuilder(DieType.DESPAIR).despair().getFace());
@@ -81,8 +81,8 @@ public interface Die {
 				return new Adjustment(DieType.SUCCESS, 	new DieFaceBuilder(DieType.SUCCESS).success().getFace());
 			case ADVANTAGE:
 				return new Adjustment(DieType.ADVANTAGE, new DieFaceBuilder(DieType.ADVANTAGE).advantage().getFace());
-			case TRIMPH:
-				return new Adjustment(DieType.TRIMPH, 	new DieFaceBuilder(DieType.TRIMPH).triumph().getFace());
+			case TRIUMPH:
+				return new Adjustment(DieType.TRIUMPH, 	new DieFaceBuilder(DieType.TRIUMPH).triumph().getFace());
 			case FAILURE:
 				return new Adjustment(DieType.FAILURE, 	new DieFaceBuilder(DieType.FAILURE).failure().getFace());
 			case THREAT:

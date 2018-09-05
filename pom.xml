@@ -15,10 +15,8 @@
 	</properties>
 
 	<build>
-<!-- 		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
-		<!-- <outputDirectory>${basedir}/target/classes</outputDirectory>
-		<testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory> -->
+		<!-- <sourceDirectory>${basedir}/src/main/java</sourceDirectory> <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
+		<!-- <outputDirectory>${basedir}/target/classes</outputDirectory> <testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory> -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -110,6 +108,7 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.1.0</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -119,5 +118,12 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.21.0</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 </project>

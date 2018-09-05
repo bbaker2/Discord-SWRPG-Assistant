@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import com.bbaker.database.DatabaseConnector;
 import com.bbaker.database.JdbiService;
 import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieType;
@@ -13,7 +12,6 @@ import com.bbaker.exceptions.SetupException;
 public class DatabaseTester {
 
 	public static void main(String...args) throws SetupException {
-		DatabaseConnector dbc;
 		try {
 			Class.forName("org.h2.Driver");
 			
@@ -34,9 +32,6 @@ public class DatabaseTester {
 				
 			dbService.storeDiceResults(11111, 22222, dice);
 			List<Die> result = dbService.retrieveDiceResults(11111, 22222);
-			
-//			conn = dbc.getConnection();
-//			ResultSet rs = dbc.query(conn, "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

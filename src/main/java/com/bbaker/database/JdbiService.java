@@ -1,8 +1,6 @@
 package com.bbaker.database;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -19,7 +17,7 @@ import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.exceptions.SetupException;
 
 
-public class JdbiService {
+public class JdbiService implements DatabaseService {
 	private Jdbi jdbi;
 	private Properties dbProps;
 	private String prefix;
@@ -34,7 +32,6 @@ public class JdbiService {
 		dbProps.put("user", 	"su");
 		dbProps.put("prefix", 	"swrpgab_"); // star wars rpg assistant bot
 		dbProps.putAll(p);
-		System.out.println(dbProps.getProperty("url"));
 		
 		prefix = dbProps.getProperty("prefix");
 		
@@ -63,7 +60,11 @@ public class JdbiService {
 		return jdbi;
 	}
 	
-	public void createTables() {
+	/* (non-Javadoc)
+	 * @see com.bbaker.database.DatabaseService#createTables()
+	 */
+	@Override
+	public boolean createTables() {
 		String tableInsert;
 		
 		if(!hasTable(TABLE_ROLL)) {
@@ -81,8 +82,9 @@ public class JdbiService {
 			jdbi.useHandle(handler -> {
 				handler.execute(tableInsert);
 			});
+			return true;
 		}
-		
+		return false;
 	}
 	
 	public void checkTables(PrintStream out) {
@@ -104,7 +106,7 @@ public class JdbiService {
 			out.println();
 		}
 	}
-	
+		
 	public List<Map<String, Object>> getTables() {
 		String query = String.format(""+
 						"select * "+
@@ -134,35 +136,10 @@ public class JdbiService {
 		);
 	}
 	
-	public Collection<Die> retrieveDiceResult(long userId, long channelId){
-		List<Die> dice = new ArrayList<>();
-		System.out.println(userId + " " + channelId);
-		
-		String query = query("select TYPE, SIDE from %s WHERE USER_ID = :userId AND CHANNEL_ID = :channelId", TABLE_ROLL);
-		
-		List<Map<String, Object>> results = jdbi.withHandle(handler -> 
-			handler.createQuery(query)
-				.bind("userId", userId)
-				.bind("channelId", channelId)
-				.mapToMap()
-		        .list()
-		);
-		
-		for(Map<String, Object> row : results) {
-			DieType dt = DieType.valueOf((String)row.get("type"));
-			int side = (int)row.get("side");
-			dice.add(Die.newDie(dt, side));
-		}
-		return dice;
-	}
-	
-	/**
-	 * Upsert Die to the database
-	 * @param userId
-	 * @param channelId
-	 * @param dice
-	 * @return
+	/* (non-Javadoc)
+	 * @see com.bbaker.database.DatabaseService#storeDiceResults(long, long, java.util.List)
 	 */
+	@Override
 	public void storeDiceResults(long userId, long channelId, List<Die> dice) {
 		String query;
 		try (Handle handle = jdbi.open()) {
@@ -192,6 +169,10 @@ public class JdbiService {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.bbaker.database.DatabaseService#retrieveDiceResults(long, long)
+	 */
+	@Override
 	public List<Die> retrieveDiceResults(long userId, long channelId){
 		String query =  query("select TYPE, SIDE from %s where USER_ID = :userId and CHANNEL_ID = :channelId", TABLE_ROLL);
 						
