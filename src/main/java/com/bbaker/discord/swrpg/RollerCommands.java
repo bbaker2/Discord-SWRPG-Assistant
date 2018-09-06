@@ -11,12 +11,13 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 
 import com.bbaker.database.DatabaseService;
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
+import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.roller.ReRollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
-import com.bbaker.discord.swrpg.table.Table;
+import com.bbaker.discord.swrpg.table.TableBuilder;
 import com.bbaker.exceptions.BadArgumentException;
 
 import de.btobastian.sdcf4j.Command;
@@ -52,7 +53,7 @@ public class RollerCommands  implements CommandExecutor {
         try {
             // parse the user message
             List<String> tokens = getList(message.getContent());
-            Table table = new Table();
+            TableBuilder table = new TableBuilder();
             rollService.processArguments(tokens.iterator(), table);
 
             TableResult result = table.roll(); // actually roll the dice
@@ -75,8 +76,8 @@ public class RollerCommands  implements CommandExecutor {
     public String handleReroll(Message message) {
         try {
             // parse the user message
-            Collection<Die> fromDB = dbService.retrieveDiceResults(message.getAuthor().getId(), message.getChannel().getId());
-            Table table = new Table();
+            Collection<RollableDie> fromDB = dbService.retrieveDiceResults(message.getAuthor().getId(), message.getChannel().getId());
+            TableBuilder table = new TableBuilder();
             for(Die die : fromDB) {
                 table.adjustDice(die.getType(), 1);
             }

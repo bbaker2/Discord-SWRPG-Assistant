@@ -2,7 +2,7 @@ package com.bbaker.database;
 
 import java.util.List;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 
 public interface DatabaseService {
 
@@ -15,8 +15,8 @@ public interface DatabaseService {
 	 * @param dice
 	 * @return
 	 */
-	void storeDiceResults(long userId, long channelId, List<Die> dice);
+	void storeDiceResults(long userId, long channelId, List<RollableDie> dice);
 
-	List<Die> retrieveDiceResults(long userId, long channelId);
+	List<RollableDie> retrieveDiceResults(long userId, long channelId);
 
 }

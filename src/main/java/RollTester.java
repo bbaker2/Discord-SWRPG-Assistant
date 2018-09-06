@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.bbaker.discord.swrpg.roller.RollerHandler;
-import com.bbaker.discord.swrpg.table.Table;
+import com.bbaker.discord.swrpg.table.TableBuilder;
 
 public class RollTester {
 
 	public static void main(String[] args) {
 		RollerHandler roller = new RollerHandler();
-		Table table = new Table();
+		TableBuilder table = new TableBuilder();
 		
 		List<String> tokens = Arrays.asList("gybprkw", "yellow", "green", "blue", "purple", "red", "black", "blue", "white");
 		tokens = new ArrayList<String>(tokens);

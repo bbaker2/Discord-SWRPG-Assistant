@@ -3,17 +3,17 @@ package com.bbaker.discord.swrpg.roller;
 import java.util.List;
 import java.util.Optional;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.TableResult;
-import com.bbaker.discord.swrpg.table.Table;
+import com.bbaker.discord.swrpg.table.TableBuilder;
 import com.bbaker.exceptions.BadArgumentException;
 
 public class ReRollerDiceHandlerImpl extends DiceHandler {
 
 
     @Override
-    public boolean evaluate(Table table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) throws BadArgumentException {
+    public boolean evaluate(TableBuilder table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) throws BadArgumentException {
         if(leftNumeric.isPresent() && rightNumeric.isPresent()) {
             throw new BadArgumentException("Die type %s has two indexes. Please pick %d or %d",
                     dt.name(), leftNumeric.get(), rightNumeric.get());
@@ -25,11 +25,11 @@ public class ReRollerDiceHandlerImpl extends DiceHandler {
         index--;
 
         if(index == -1) {
-            throw new BadArgumentException("There is not 0th position. Did you mean index 1?");
+            throw new BadArgumentException("There is no 0th position. Did you mean index 1?");
         }
 
         TableResult pastResult = table.peekResult();
-        List<Die> dice = pastResult.getDice();
+        List<RollableDie> dice = pastResult.getDice();
 
         for(int i = 0; i < dice.size(); i++) {
             if(dice.get(i).getType() == dt) {

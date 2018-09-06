@@ -17,7 +17,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
 import com.bbaker.database.DatabaseService;
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.TableResult;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
@@ -29,17 +29,17 @@ class RollerCommandsTest {
 
     private DatabaseService dbService;
     private DiscordApi api;
-    private List<Die> storedDice;
+    private List<RollableDie> storedDice;
 
     @BeforeEach
     public void setup() {
         FallbackLoggerConfiguration.setDebug(true);
-        storedDice = new ArrayList<Die>();
+        storedDice = new ArrayList<RollableDie>();
         api = mock(DiscordApi.class);
         dbService = mock(DatabaseService.class);
 
         doAnswer(invocation ->
-            storedDice = (List<Die>)invocation.getArgument(2)
+            storedDice = (List<RollableDie>)invocation.getArgument(2)
         ).when(dbService).storeDiceResults(anyLong(), anyLong(), anyList());
 
         doAnswer(invocation ->
@@ -141,7 +141,7 @@ class RollerCommandsTest {
 
         @Override
         public boolean matches(TableResult tr) {
-            List<Die> actual = tr.getDice();
+            List<RollableDie> actual = tr.getDice();
 
             if(expected.length != actual.size()) {
                 return false;

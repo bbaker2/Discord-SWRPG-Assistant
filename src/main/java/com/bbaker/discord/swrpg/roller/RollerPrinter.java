@@ -6,8 +6,9 @@ import java.util.List;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.emoji.KnownCustomEmoji;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
+import com.bbaker.discord.swrpg.die.Die;
 
 public class RollerPrinter {
 	DiscordApi api;
@@ -18,7 +19,7 @@ public class RollerPrinter {
 	
 	public String print(TableResult tr) {
 		StringBuilder sb = new StringBuilder();
-		List<Die> dice = tr.getDice();
+		List<RollableDie> dice = tr.getDice();
 		for(Die dr : dice) {
 			sb.append(findEmoji(dr.getFace()));
 		}

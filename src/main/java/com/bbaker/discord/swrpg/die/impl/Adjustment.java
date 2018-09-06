@@ -1,10 +1,11 @@
 package com.bbaker.discord.swrpg.die.impl;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieResult;
 import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.die.Die;
 
-public class Adjustment implements Die {
+public class Adjustment implements RollableDie {
 	private DieResult diceResult;
 	private DieType dieType;
 
@@ -24,7 +25,7 @@ public class Adjustment implements Die {
 	}
 
 	@Override
-	public DieResult peek() {
+	public DieResult getResults() {
 		return diceResult;
 	}
 	
@@ -40,7 +41,7 @@ public class Adjustment implements Die {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof Die) {
+		if(o instanceof RollableDie) {
 			Die trg = (Die)o;
 			return trg.getType() == this.getType() && trg.getSide() == this.getSide();
 		}

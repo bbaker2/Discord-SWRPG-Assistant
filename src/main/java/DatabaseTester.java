@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.bbaker.database.JdbiService;
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.exceptions.SetupException;
 
@@ -24,14 +24,14 @@ public class DatabaseTester {
 			
 			dbService.checkTables(System.out);
 			
-			List<Die> dice = Arrays.asList(
-					Die.newDie(DieType.ABILITY, 0),
-					Die.newDie(DieType.ADVANTAGE, 1),
-					Die.newDie(DieType.BOOST, 2)
+			List<RollableDie> dice = Arrays.asList(
+					RollableDie.newDie(DieType.ABILITY, 0),
+					RollableDie.newDie(DieType.ADVANTAGE, 1),
+					RollableDie.newDie(DieType.BOOST, 2)
 				);
 				
 			dbService.storeDiceResults(11111, 22222, dice);
-			List<Die> result = dbService.retrieveDiceResults(11111, 22222);
+			List<RollableDie> result = dbService.retrieveDiceResults(11111, 22222);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}

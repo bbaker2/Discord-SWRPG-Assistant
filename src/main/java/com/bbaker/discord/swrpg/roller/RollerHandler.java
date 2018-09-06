@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import com.bbaker.discord.swrpg.ArgumentHandler;
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.discord.swrpg.table.Table;
+import com.bbaker.discord.swrpg.table.TableBuilder;
 
 public class RollerHandler implements ArgumentHandler {
     private static final Pattern diceRgx = Pattern.compile("(\\d+)?([A-Za-z]+)(\\d+)?");
@@ -15,7 +15,7 @@ public class RollerHandler implements ArgumentHandler {
     private static final int RIGHT_COUNT = 3;
 
     @Override
-    public boolean processArguments(Iterator<String> args, Table table) {
+    public boolean processArguments(Iterator<String> args, TableBuilder table) {
         boolean allRemoved = true;
         Matcher m; DieType dieType; int count;
         while(args.hasNext()) {
@@ -71,7 +71,7 @@ public class RollerHandler implements ArgumentHandler {
      * @param table the table to update
      * @return TRUE if ALL characters can be converted to a die. Otherwise FALSE
      */
-    private boolean tryAgain(String value, Table table) {
+    private boolean tryAgain(String value, TableBuilder table) {
         char[] splitUp = value.toCharArray();
         DieType[] foundDice = new DieType[splitUp.length];
         DieType dieType;

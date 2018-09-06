@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import com.bbaker.discord.swrpg.ArgumentHandler;
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.discord.swrpg.table.Table;
+import com.bbaker.discord.swrpg.table.TableBuilder;
 import com.bbaker.exceptions.BadArgumentException;
 
 public abstract class DiceHandler implements ArgumentHandler {
@@ -17,10 +17,10 @@ public abstract class DiceHandler implements ArgumentHandler {
     private static final int DIE_TOKEN = 2;
     private static final int RIGHT_COUNT = 3;
 
-    public abstract boolean evaluate(Table table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) throws BadArgumentException;
+    public abstract boolean evaluate(TableBuilder table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) throws BadArgumentException;
 
     @Override
-    public boolean processArguments(Iterator<String> args, Table table) throws BadArgumentException {
+    public boolean processArguments(Iterator<String> args, TableBuilder table) throws BadArgumentException {
         boolean allRemoved = true;
         Matcher m; DieType dieType; Optional<Integer> leftNum; Optional<Integer> rightNum; boolean success;
         while(args.hasNext()) {
@@ -61,7 +61,7 @@ public abstract class DiceHandler implements ArgumentHandler {
      * @return TRUE if ALL characters can be converted to a die. Otherwise FALSE
      * @throws BadArgumentException
      */
-    private boolean tryAgain(String value, Table table) throws BadArgumentException {
+    private boolean tryAgain(String value, TableBuilder table) throws BadArgumentException {
         char[] splitUp = value.toCharArray();
         DieType[] foundDice = new DieType[splitUp.length];
         DieType dieType;

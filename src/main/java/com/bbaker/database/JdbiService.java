@@ -12,8 +12,9 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.h2.H2DatabasePlugin;
 import org.jdbi.v3.core.statement.PreparedBatch;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.exceptions.SetupException;
 
 
@@ -140,7 +141,7 @@ public class JdbiService implements DatabaseService {
 	 * @see com.bbaker.database.DatabaseService#storeDiceResults(long, long, java.util.List)
 	 */
 	@Override
-	public void storeDiceResults(long userId, long channelId, List<Die> dice) {
+	public void storeDiceResults(long userId, long channelId, List<RollableDie> dice) {
 		String query;
 		try (Handle handle = jdbi.open()) {
 			handle.begin();
@@ -173,7 +174,7 @@ public class JdbiService implements DatabaseService {
 	 * @see com.bbaker.database.DatabaseService#retrieveDiceResults(long, long)
 	 */
 	@Override
-	public List<Die> retrieveDiceResults(long userId, long channelId){
+	public List<RollableDie> retrieveDiceResults(long userId, long channelId){
 		String query =  query("select TYPE, SIDE from %s where USER_ID = :userId and CHANNEL_ID = :channelId", TABLE_ROLL);
 						
 		return jdbi.withHandle(
@@ -181,7 +182,7 @@ public class JdbiService implements DatabaseService {
 					.bind("userId", userId)
 					.bind("channelId", channelId)
 					.map((rs, col, ctx) 
-							-> Die.newDie(
+							-> RollableDie.newDie(
 									DieType.valueOf(rs.getString("TYPE")), 
 									rs.getInt("SIDE")
 							))

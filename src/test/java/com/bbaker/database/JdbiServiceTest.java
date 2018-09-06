@@ -14,7 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.exceptions.SetupException;
 
@@ -78,27 +78,27 @@ public class JdbiServiceTest {
 	public void testDieInsert() {
 		
 		// Test a fresh insert
-		List<Die> dice = Arrays.asList(
-			Die.newDie(DieType.ABILITY, 0),
-			Die.newDie(DieType.ADVANTAGE, 1),
-			Die.newDie(DieType.BOOST, 2),
-			Die.newDie(DieType.FORCE),
-			Die.newDie(DieType.LIGHT)
+		List<RollableDie> dice = Arrays.asList(
+			RollableDie.newDie(DieType.ABILITY, 0),
+			RollableDie.newDie(DieType.ADVANTAGE, 1),
+			RollableDie.newDie(DieType.BOOST, 2),
+			RollableDie.newDie(DieType.FORCE),
+			RollableDie.newDie(DieType.LIGHT)
 		);
 		
 		dbService.storeDiceResults(USER_ID, CHANNEL_ID, dice);
-		List<Die> result = dbService.retrieveDiceResults(USER_ID, CHANNEL_ID);
+		List<RollableDie> result = dbService.retrieveDiceResults(USER_ID, CHANNEL_ID);
 		
 		assertEquals(dice.size(), result.size(), "Make sure the same results are returned for the first insert");
 		assertTrue(dice.containsAll(result), "Not all die were found after the first insert: " + result);
 		
 		// Test the second insert 
 		dice = Arrays.asList(
-			Die.newDie(DieType.DIFFICULTY, 3),
-			Die.newDie(DieType.CHALLENGE, 4),
-			Die.newDie(DieType.SETBACK, 5),
-			Die.newDie(DieType.DESPAIR),
-			Die.newDie(DieType.DARK)
+			RollableDie.newDie(DieType.DIFFICULTY, 3),
+			RollableDie.newDie(DieType.CHALLENGE, 4),
+			RollableDie.newDie(DieType.SETBACK, 5),
+			RollableDie.newDie(DieType.DESPAIR),
+			RollableDie.newDie(DieType.DARK)
 		);
 		
 		dbService.storeDiceResults(USER_ID, CHANNEL_ID, dice);

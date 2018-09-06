@@ -8,5 +8,5 @@ public interface TableResult extends DieResult {
 	 * All the dice used for this roll
 	 * @return
 	 */
-	public List<Die> getDice();
+	public List<RollableDie> getDice();
 }

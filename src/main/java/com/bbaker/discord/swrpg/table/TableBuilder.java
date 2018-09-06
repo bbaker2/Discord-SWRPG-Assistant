@@ -1,11 +1,11 @@
 package com.bbaker.discord.swrpg.table;
 
-import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.TableResult;
 import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
-public class Table {
+public class TableBuilder {
     // Dice
     private int ability = 0, proficiency = 0 , boost = 0;
     private int difficulty = 0, challenge = 0, setback = 0;
@@ -113,7 +113,7 @@ public class Table {
 
     private void tossDice(DieType dt, int count) {
         for(int i = 0; i < count; i++) {
-            Die die = Die.newDie(dt);
+            RollableDie die = RollableDie.newDie(dt);
             die.roll();
             tableResult.addDie(die);
         }

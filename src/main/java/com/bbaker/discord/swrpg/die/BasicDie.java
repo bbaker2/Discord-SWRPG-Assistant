@@ -1,6 +1,6 @@
 package com.bbaker.discord.swrpg.die;
 
-public abstract class BasicDie implements Die {
+public abstract class BasicDie implements RollableDie {
 	private int index = 0;
 	protected abstract DieResult[] getSides();
 	
@@ -18,7 +18,7 @@ public abstract class BasicDie implements Die {
 	}
 	
 	@Override
-	public DieResult peek() {
+	public DieResult getResults() {
 		DieResult[] sides = getSides();
 		return sides[index];
 	}
@@ -47,7 +47,7 @@ public abstract class BasicDie implements Die {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof Die) {
+		if(o instanceof RollableDie) {
 			Die trg = (Die)o;
 			return trg.getType() == this.getType() && trg.getSide() == this.getSide();
 		}
