@@ -15,28 +15,28 @@ import de.btobastian.sdcf4j.handler.JavacordHandler;
 
 public class R5G8Tester {
 
-	public static void main(String[] args) throws SetupException {
-		FallbackLoggerConfiguration.setDebug(true);
+    public static void main(String[] args) throws SetupException {
+        FallbackLoggerConfiguration.setDebug(true);
 
-		// Prepare Database
-		try {
-			Class.forName("org.h2.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		DatabaseService dbService = new JdbiService(new Properties());
-		dbService.createTables();
+        // Prepare Database
+        try {
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        DatabaseService dbService = new JdbiService(new Properties());
+        dbService.createTables();
 
-		// Start up bot
-		String token = "MzkzOTE3NzI5MDQ5OTM1ODky.DWKtSQ.oS7U6tSu1Pi3Im46DF90Gz3tpcs";
-		DiscordApiBuilder dab = new DiscordApiBuilder().setAccountType(AccountType.BOT).setToken(token);
-		DiscordApi api = dab.login().join();
-		CommandHandler ch = new JavacordHandler(api);
-		ch.setDefaultPrefix("!");
-		ch.registerCommand(new RollerCommands(dbService, api));
-		
+        // Start up bot
+        String token = "bot-token-here";
+        DiscordApiBuilder dab = new DiscordApiBuilder().setAccountType(AccountType.BOT).setToken(token);
+        DiscordApi api = dab.login().join();
+        CommandHandler ch = new JavacordHandler(api);
+        ch.setDefaultPrefix("!");
+        ch.registerCommand(new RollerCommands(dbService, api));
 
-	}
+
+    }
 
 }
