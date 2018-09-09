@@ -1,9 +1,14 @@
 package com.bbaker.discord.swrpg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +22,12 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
 import com.bbaker.database.DatabaseService;
-import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
+import com.bbaker.discord.swrpg.roller.ReRollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
+import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
 class RollerCommandsTest {
 
@@ -42,9 +49,12 @@ class RollerCommandsTest {
             storedDice = (List<RollableDie>)invocation.getArgument(2)
         ).when(dbService).storeDiceResults(anyLong(), anyLong(), anyList());
 
-        doAnswer(invocation ->
-            storedDice
-        ).when(dbService).retrieveDiceResults(anyLong(), anyLong());
+        doAnswer(invocation -> {
+            DiceTower dt = new DiceTower();
+            for(RollableDie rd : storedDice) dt.addDie(rd);
+            return dt;
+
+        }).when(dbService).retrieveDiceResults(anyLong(), anyLong());
     }
 
     public Message genMsg(String content) {
@@ -100,7 +110,7 @@ class RollerCommandsTest {
     }
 
     @Test
-    public void handleReRollTest() {
+    public void basicReRollTest() {
         RollerCommands rollerService = new RollerCommands(dbService, api);
 
         RollerPrinter mockPrinter = mock(RollerPrinter.class);
@@ -127,10 +137,84 @@ class RollerCommandsTest {
                 DieType.SUCCESS, DieType.ADVANTAGE, DieType.TRIUMPH,
                 DieType.FAILURE, DieType.THREAT, DieType.DESPAIR,
                 DieType.LIGHT, DieType.DARK)));
+    }
 
+    @Test
+    public void badReRollTest() {
+        RollerCommands rollerService = new RollerCommands(dbService, api);
+
+        RollerPrinter mockPrinter = mock(RollerPrinter.class);
+
+        rollerService.handleRoll(genMsg("!r gggp"));
+
+        String expected, response;
+
+        response = rollerService.handleReroll(genMsg("!rr 1g2"));
+        expected = String.format(ReRollerDiceHandlerImpl.TWO_INDEX_MSG, DieType.ABILITY, 1, 2);
+        assertEquals(expected, response, "A friendly error message should have been returned for having too many indexes");
+
+        response = rollerService.handleReroll(genMsg("!rr 0g"));
+        expected = ReRollerDiceHandlerImpl.ZERO_INDEX_MSG;
+        assertEquals(expected, response, "A friendly error message should have been returned for having a 0-index");
+
+
+        response = rollerService.handleReroll(genMsg("!rr p2"));
+        expected = String.format(DiceTower.OUT_OF_BOUNDS_MSG, 1, DieType.DIFFICULTY);
+        assertEquals(expected, response, "Trying to reroll a die type that exists but with an incorrect index");
+
+        response = rollerService.handleReroll(genMsg("!rr r1"));
+        expected = String.format(DiceTower.NONE_EXIST_MSG, DieType.CHALLENGE);
+        assertEquals(expected, response, "Trying to reroll a die type that exists but with an incorrect index");
+
+        response = rollerService.handleReroll(genMsg("!rr advantage"));
+        expected = String.format(DiceTower.NOT_SUPPORTED_MSG, DieType.ADVANTAGE);
+        assertEquals(expected, response, "Trying to reroll a die type that exists but with an incorrect index");
 
     }
 
+    @Test
+    public void accuracyReRollTest() {
+        RollerCommands rollerService = new RollerCommands(dbService, api);
+
+        RollableDie doNotRoll = mock(RollableDie.class, Mockito.RETURNS_DEEP_STUBS);
+        when(doNotRoll.getType()).thenReturn(DieType.ABILITY);
+
+        RollableDie willRoll = mock(RollableDie.class, Mockito.RETURNS_DEEP_STUBS);
+        when(willRoll.getType()).thenReturn(DieType.ABILITY);
+
+        // prepare a table with 5 green die
+        DiceTower dt = new DiceTower();
+        dt.addDie(doNotRoll);
+        dt.addDie(doNotRoll);
+        dt.addDie(doNotRoll);
+        dt.addDie(willRoll); // only the 4th index should reroll
+        dt.addDie(doNotRoll);
+
+        when(dbService.retrieveDiceResults(anyLong(), anyLong())).thenReturn(dt);
+
+        rollerService.handleReroll(genMsg("!rr 4green"));
+        verify(willRoll, 	times(1).description("Only the 4th die should roll.")).roll();
+        verify(doNotRoll, 	times(0)).roll();
+
+        // resetting the willRoll die
+        willRoll = mock(RollableDie.class, Mockito.RETURNS_DEEP_STUBS);
+        when(willRoll.getType()).thenReturn(DieType.ABILITY);
+
+        // prepare a (new) table with 5 green die
+        dt = new DiceTower();
+        dt.addDie(willRoll); // only the 1st index should reroll
+        dt.addDie(doNotRoll);
+        dt.addDie(doNotRoll);
+        dt.addDie(doNotRoll);
+        dt.addDie(doNotRoll);
+
+        when(dbService.retrieveDiceResults(anyLong(), anyLong())).thenReturn(dt);
+
+        rollerService.handleReroll(genMsg("!rr ability"));
+        verify(willRoll, 	times(1).description("Since no index was provided, only the 1st die should reroll")).roll();
+        verify(doNotRoll, 	times(0)).roll();
+
+    }
 
     private class ContainsDie implements ArgumentMatcher<TableResult> {
 

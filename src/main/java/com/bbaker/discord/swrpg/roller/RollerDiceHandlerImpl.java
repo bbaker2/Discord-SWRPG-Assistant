@@ -3,13 +3,13 @@ package com.bbaker.discord.swrpg.roller;
 import java.util.Optional;
 
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.discord.swrpg.table.TableBuilder;
+import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
 public class RollerDiceHandlerImpl extends DiceHandler {
 
 
     @Override
-    public boolean evaluate(TableBuilder table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) {
+    public boolean evaluate(DiceTower table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) {
         int total = 0;
         boolean useDefault = true;
 
@@ -27,7 +27,7 @@ public class RollerDiceHandlerImpl extends DiceHandler {
             total = 1;
         }
 
-        table.adjustDice(dt, total);
+        table.addDie(dt, total);
 
         return true;
     }

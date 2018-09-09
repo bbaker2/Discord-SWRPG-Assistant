@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import com.bbaker.discord.swrpg.ArgumentHandler;
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.discord.swrpg.table.TableBuilder;
+import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
 public class RollerHandler implements ArgumentHandler {
     private static final Pattern diceRgx = Pattern.compile("(\\d+)?([A-Za-z]+)(\\d+)?");
@@ -15,7 +15,7 @@ public class RollerHandler implements ArgumentHandler {
     private static final int RIGHT_COUNT = 3;
 
     @Override
-    public boolean processArguments(Iterator<String> args, TableBuilder table) {
+    public boolean processArguments(Iterator<String> args, DiceTower diceTower) {
         boolean allRemoved = true;
         Matcher m; DieType dieType; int count;
         while(args.hasNext()) {
@@ -26,14 +26,14 @@ public class RollerHandler implements ArgumentHandler {
                 dieType = findDie(m.group(DIE_TOKEN)); // the actual string token
                 if(dieType == null) {
                     // If no die was found immediately, split apart into a char array and try again
-                    if(tryAgain(m.group(DIE_TOKEN), table)) {
+                    if(tryAgain(m.group(DIE_TOKEN), diceTower)) {
                         args.remove(); // remove since a die was found
                     } else {
                         allRemoved = false;
                     }
                 } else {
                     count = getQuanity(m);
-                    table.adjustDice(dieType, count);
+                    diceTower.addDie(dieType, count);
                     args.remove(); // remove since a die was found
                 }
             }
@@ -68,10 +68,10 @@ public class RollerHandler implements ArgumentHandler {
      * Splits <code>value</code> into chars and tries to convert them into
      * die (only using the shorthand version of die tokens)
      * @param value the string that will be split up by character
-     * @param table the table to update
+     * @param diceTower the table to update
      * @return TRUE if ALL characters can be converted to a die. Otherwise FALSE
      */
-    private boolean tryAgain(String value, TableBuilder table) {
+    private boolean tryAgain(String value, DiceTower diceTower) {
         char[] splitUp = value.toCharArray();
         DieType[] foundDice = new DieType[splitUp.length];
         DieType dieType;
@@ -85,7 +85,7 @@ public class RollerHandler implements ArgumentHandler {
         }
 
         for(DieType td : foundDice) {
-            table.adjustDice(td, 1);
+            diceTower.addDie(td, 1);
         }
         return true;
     }

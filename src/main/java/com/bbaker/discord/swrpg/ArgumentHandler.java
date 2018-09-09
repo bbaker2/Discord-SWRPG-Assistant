@@ -2,7 +2,7 @@ package com.bbaker.discord.swrpg;
 
 import java.util.Iterator;
 
-import com.bbaker.discord.swrpg.table.TableBuilder;
+import com.bbaker.discord.swrpg.table.impl.DiceTower;
 import com.bbaker.exceptions.BadArgumentException;
 
 public interface ArgumentHandler {
@@ -16,5 +16,5 @@ public interface ArgumentHandler {
      * @return true if it is suggested that no more arguments need to processed
      * @throws BadArgumentException
      */
-    public boolean processArguments(Iterator<String> args, TableBuilder table) throws BadArgumentException;
+    public boolean processArguments(Iterator<String> args, DiceTower table) throws BadArgumentException;
 }

@@ -3,14 +3,18 @@ package com.bbaker.discord.swrpg.table.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bbaker.discord.swrpg.die.RollableDie;
-import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.discord.swrpg.die.TableResult;
 import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.die.RollableDie;
+import com.bbaker.discord.swrpg.die.TableResult;
 import com.bbaker.discord.swrpg.table.Result;
 import com.bbaker.exceptions.BadArgumentException;
 
 public class DiceTower implements TableResult {
+    public static final String OUT_OF_BOUNDS_MSG = "Please only reroll between 1 and %d for %s";
+    public static final String NONE_EXIST_MSG = "No %s exist to reroll";
+    public static final String NOT_SUPPORTED_MSG = "Rerolls not supported for %s";
+
     int totalCheck = 0, totalConsequence = 0,
         totalTriumph = 0, totalDespair = 0,
         totalLight = 0, totalDark = 0;
@@ -45,7 +49,7 @@ public class DiceTower implements TableResult {
         totalDark = 0;
 
         // loop through everything
-        List<RollableDie> allDice = getDice();
+        List<RollableDie> allDice = getRollableDice();
         for(RollableDie d : allDice) {
             d.roll();
             adjustTable(d.getResults());
@@ -83,15 +87,15 @@ public class DiceTower implements TableResult {
                 break;
 
             default:
-                throw new BadArgumentException("Rerolls not supported for %s", dt.name());
+                throw new BadArgumentException(NOT_SUPPORTED_MSG, dt.name());
         }
 
-        if(targetDice.size() == index) {
-            throw new BadArgumentException("No %s exist to reroll", dt.name());
+        if(targetDice.size() == 0) {
+            throw new BadArgumentException(NONE_EXIST_MSG, dt.name());
         }
 
-        if(targetDice.size() < index) {
-            throw new BadArgumentException("Please only reroll between 1 and %d for %s", targetDice.size(), dt.name());
+        if(targetDice.size() <= index) {
+            throw new BadArgumentException(OUT_OF_BOUNDS_MSG, targetDice.size(), dt.name());
         }
 
         RollableDie targetDie = targetDice.get(index);
@@ -100,9 +104,9 @@ public class DiceTower implements TableResult {
         adjustTable(targetDie.roll());
     }
 
-    public void addDie(RollableDie die, int count) {
+    public void addDie(DieType dt, int count) {
         for(int i = 0; i < count; i++) {
-            addDie(die);
+            addDie(RollableDie.newDie(dt));
         }
     }
 
@@ -164,6 +168,29 @@ public class DiceTower implements TableResult {
         }
     }
 
+    private List<RollableDie> getRollableDice() {
+        List<RollableDie> allDice = new ArrayList<RollableDie>();
+        // positive results
+        allDice.addAll(proficiency);
+        allDice.addAll(ability);
+        allDice.addAll(boost);
+        allDice.addAll(success);
+        allDice.addAll(advantage);
+        allDice.addAll(triumph);
+        // negative results
+        allDice.addAll(challenge);
+        allDice.addAll(difficulty);
+        allDice.addAll(setback);
+        allDice.addAll(failure);
+        allDice.addAll(threat);
+        allDice.addAll(despaire);
+        // force results
+        allDice.addAll(force);
+        allDice.addAll(light);
+        allDice.addAll(dark);
+        return allDice;
+    }
+
     @Override
     public int getCheck() {
         return totalCheck;
@@ -201,26 +228,7 @@ public class DiceTower implements TableResult {
 
     @Override
     public List<RollableDie> getDice() {
-        List<RollableDie> allDice = new ArrayList<RollableDie>();
-        // positive results
-        allDice.addAll(proficiency);
-        allDice.addAll(ability);
-        allDice.addAll(boost);
-        allDice.addAll(success);
-        allDice.addAll(advantage);
-        allDice.addAll(triumph);
-        // negative results
-        allDice.addAll(challenge);
-        allDice.addAll(difficulty);
-        allDice.addAll(setback);
-        allDice.addAll(failure);
-        allDice.addAll(threat);
-        allDice.addAll(despaire);
-        // force results
-        allDice.addAll(force);
-        allDice.addAll(light);
-        allDice.addAll(dark);
-        return allDice;
+        return getRollableDice();
     }
 
     @Override

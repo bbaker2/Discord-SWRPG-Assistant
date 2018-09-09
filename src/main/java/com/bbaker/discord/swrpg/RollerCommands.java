@@ -2,7 +2,6 @@ package com.bbaker.discord.swrpg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,13 +10,10 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 
 import com.bbaker.database.DatabaseService;
-import com.bbaker.discord.swrpg.die.RollableDie;
-import com.bbaker.discord.swrpg.die.TableResult;
-import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.roller.ReRollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
-import com.bbaker.discord.swrpg.table.TableBuilder;
+import com.bbaker.discord.swrpg.table.impl.DiceTower;
 import com.bbaker.exceptions.BadArgumentException;
 
 import de.btobastian.sdcf4j.Command;
@@ -53,16 +49,16 @@ public class RollerCommands  implements CommandExecutor {
         try {
             // parse the user message
             List<String> tokens = getList(message.getContent());
-            TableBuilder table = new TableBuilder();
+            DiceTower table = new DiceTower();
             rollService.processArguments(tokens.iterator(), table);
 
-            TableResult result = table.roll(); // actually roll the dice
+            table.roll(); // actually roll the dice
 
             // store to the database
-            dbService.storeDiceResults(message.getAuthor().getId(), message.getChannel().getId(), result.getDice());
+            dbService.storeDiceResults(message.getAuthor().getId(), message.getChannel().getId(), table.getDice());
 
             // print
-            return printer.print(result);
+            return printer.print(table);
         } catch (BadArgumentException e) {
             logger.debug(e);
             return e.getMessage();
@@ -76,25 +72,22 @@ public class RollerCommands  implements CommandExecutor {
     public String handleReroll(Message message) {
         try {
             // parse the user message
-            Collection<RollableDie> fromDB = dbService.retrieveDiceResults(message.getAuthor().getId(), message.getChannel().getId());
-            TableBuilder table = new TableBuilder();
-            for(Die die : fromDB) {
-                table.adjustDice(die.getType(), 1);
-            }
+            DiceTower diceTower = dbService.retrieveDiceResults(message.getAuthor().getId(), message.getChannel().getId());
             List<String> tokens = getList(message.getContent());
-            TableResult result;
             if(tokens.isEmpty()) {
-                result = table.roll(); // the reroll
+                diceTower.roll(); // the reroll
             } else {
-                rerollService.processArguments(tokens.iterator(), table);
-                result = table.peekResult();
+                rerollService.processArguments(tokens.iterator(), diceTower);
             }
 
             // store to the database, again
-            dbService.storeDiceResults(message.getAuthor().getId(), message.getChannel().getId(), result.getDice());
+            dbService.storeDiceResults(message.getAuthor().getId(), message.getChannel().getId(), diceTower.getDice());
 
             // print
-            return printer.print(result);
+            return printer.print(diceTower);
+        } catch (BadArgumentException e) {
+            logger.debug(e);
+            return e.getMessage();
         } catch (Exception e) {
             logger.debug("Exception thrown durng rerolls.", e);
             return ERROR_MSG;
