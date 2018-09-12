@@ -155,14 +155,17 @@ public class JdbiService implements DatabaseService {
                 .execute();
 
             // The insert the new ones
-            query = query("insert into %s(USER_ID, CHANNEL_ID, TYPE, SIDE) VALUES(:userId, :channelId, :type, :side)", TABLE_ROLL);
-            PreparedBatch batch = handle.prepareBatch(query);
-            for(Die die : dice) {
-                batch.bind("userId", userId);
-                batch.bind("channelId", channelId);
-                batch.bind("type", die.getType().name());
-                batch.bind("side", die.getSide());
-                batch.add();
+            if(dice.size() > 0) {
+                query = query("insert into %s(USER_ID, CHANNEL_ID, TYPE, SIDE) VALUES(:userId, :channelId, :type, :side)", TABLE_ROLL);
+                PreparedBatch batch = handle.prepareBatch(query);
+                for(Die die : dice) {
+                    batch.bind("userId", userId);
+                    batch.bind("channelId", channelId);
+                    batch.bind("type", die.getType().name());
+                    batch.bind("side", die.getSide());
+                    batch.add();
+                }
+                batch.execute();
             }
 
             batch.execute();
