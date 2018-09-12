@@ -3,6 +3,9 @@ package com.bbaker.discord.swrpg.table.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
@@ -14,6 +17,8 @@ public class DiceTower implements TableResult {
     public static final String OUT_OF_BOUNDS_MSG = "Please only reroll between 1 and %d for %s";
     public static final String NONE_EXIST_MSG = "No %s exist to reroll";
     public static final String NOT_SUPPORTED_MSG = "Rerolls not supported for %s";
+
+    private static final Logger logger = LogManager.getLogger(DiceTower.class);
 
     int totalCheck = 0, totalConsequence = 0,
         totalTriumph = 0, totalDespair = 0,
@@ -112,7 +117,7 @@ public class DiceTower implements TableResult {
 
     public void addDie(RollableDie die) {
         adjustTable(die.getResults());
-        System.out.println(die.getType() + " -> " + die.getResults());
+        logger.trace(die.getType() + " -> " + die.getResults());
 
         switch(die.getType()) {
             // Positive

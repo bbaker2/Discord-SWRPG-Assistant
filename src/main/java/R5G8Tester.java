@@ -32,7 +32,7 @@ public class R5G8Tester {
         dbService.createTables();
 
         // Start up bot
-        String token = "bot-token-here";
+        String token = args[0];
         DiscordApiBuilder dab = new DiscordApiBuilder().setAccountType(AccountType.BOT).setToken(token);
         DiscordApi api = dab.login().join();
         EmojiService.setApi(api);

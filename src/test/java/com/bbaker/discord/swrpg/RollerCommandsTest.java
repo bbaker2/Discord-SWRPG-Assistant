@@ -40,6 +40,7 @@ class RollerCommandsTest {
     @BeforeEach
     public void setup() {
         FallbackLoggerConfiguration.setDebug(true);
+        FallbackLoggerConfiguration.setTrace(true);
         storedDice = new ArrayList<RollableDie>();
         api = mock(DiscordApi.class);
         dbService = mock(DatabaseService.class);
