@@ -1,4 +1,10 @@
-package com.bbaker.discord.swrpg.die;
+package com.bbaker.discord.swrpg.die.impl;
+
+import com.bbaker.discord.swrpg.die.Die;
+import com.bbaker.discord.swrpg.die.DieFaceBuilder;
+import com.bbaker.discord.swrpg.die.DieResult;
+import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.die.RollableDie;
 
 public abstract class BasicDie implements RollableDie {
 	private int index = 0;

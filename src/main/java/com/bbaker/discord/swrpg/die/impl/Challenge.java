@@ -1,6 +1,5 @@
 package com.bbaker.discord.swrpg.die.impl;
 
-import com.bbaker.discord.swrpg.die.BasicDie;
 import com.bbaker.discord.swrpg.die.DieResult;
 import com.bbaker.discord.swrpg.die.DieType;
 

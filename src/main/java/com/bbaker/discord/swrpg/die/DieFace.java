@@ -1,7 +1,4 @@
-package com.bbaker.discord.swrpg.table.impl;
-
-import com.bbaker.discord.swrpg.die.DieResult;
-import com.bbaker.discord.swrpg.die.DieType;
+package com.bbaker.discord.swrpg.die;
 
 public class DieFace implements DieResult {
 	

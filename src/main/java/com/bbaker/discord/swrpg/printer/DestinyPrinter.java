@@ -1,8 +1,7 @@
-package com.bbaker.discord.swrpg;
+package com.bbaker.discord.swrpg.printer;
 
 import com.bbaker.discord.swrpg.destiny.DestinyTracker;
 import com.bbaker.discord.swrpg.die.Die;
-import com.bbaker.discord.swrpg.roller.EmojiService;
 
 public class DestinyPrinter {
 

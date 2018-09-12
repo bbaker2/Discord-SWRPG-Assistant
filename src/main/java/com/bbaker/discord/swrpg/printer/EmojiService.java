@@ -1,9 +1,8 @@
-package com.bbaker.discord.swrpg.roller;
+package com.bbaker.discord.swrpg.printer;
 
 import org.javacord.api.DiscordApi;
 
 import com.bbaker.discord.swrpg.die.Die;
-import com.bbaker.discord.swrpg.roller.impl.EmojiServiceImpl;
 
 public interface EmojiService {
     static EmojiServiceImpl esInstance = new EmojiServiceImpl();

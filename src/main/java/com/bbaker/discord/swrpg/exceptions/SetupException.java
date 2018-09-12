@@ -1,4 +1,4 @@
-package com.bbaker.exceptions;
+package com.bbaker.discord.swrpg.exceptions;
 
 public class SetupException extends Throwable {
 

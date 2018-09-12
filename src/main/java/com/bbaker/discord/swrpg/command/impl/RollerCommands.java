@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg;
+package com.bbaker.discord.swrpg.command.impl;
 
 import java.util.List;
 
@@ -7,11 +7,11 @@ import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 
-import com.bbaker.database.DatabaseService;
+import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.discord.swrpg.roller.RollerPrinter;
-import com.bbaker.discord.swrpg.table.impl.DiceTower;
-import com.bbaker.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.printer.RollerPrinter;
+import com.bbaker.discord.swrpg.roller.DiceTower;
 
 import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;

@@ -1,8 +1,8 @@
-package com.bbaker.discord.swrpg.roller;
+package com.bbaker.discord.swrpg.command;
 
 import java.util.OptionalInt;
 
-import com.bbaker.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public interface ArgumentEvaluator {
 

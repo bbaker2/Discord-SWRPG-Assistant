@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg;
+package com.bbaker.discord.swrpg.command.impl;
 
 import java.util.List;
 
@@ -6,14 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.Message;
 
-import com.bbaker.database.DatabaseService;
+import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.destiny.DestinyTracker;
 import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieResult;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
-import com.bbaker.discord.swrpg.roller.EmojiService;
-import com.bbaker.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.printer.DestinyPrinter;
+import com.bbaker.discord.swrpg.printer.EmojiService;
 
 import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;

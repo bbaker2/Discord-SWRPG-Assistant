@@ -1,4 +1,4 @@
-package com.bbaker.database;
+package com.bbaker.discord.swrpg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -15,8 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.bbaker.discord.swrpg.die.RollableDie;
+import com.bbaker.discord.swrpg.exceptions.SetupException;
+import com.bbaker.discord.swrpg.database.JdbiService;
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.exceptions.SetupException;
 
 public class JdbiServiceTest {
 

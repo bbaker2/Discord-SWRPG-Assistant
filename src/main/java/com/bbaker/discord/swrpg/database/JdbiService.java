@@ -1,4 +1,4 @@
-package com.bbaker.database;
+package com.bbaker.discord.swrpg.database;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -16,8 +16,8 @@ import com.bbaker.discord.swrpg.destiny.DestinyTracker;
 import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
-import com.bbaker.discord.swrpg.table.impl.DiceTower;
-import com.bbaker.exceptions.SetupException;
+import com.bbaker.discord.swrpg.exceptions.SetupException;
+import com.bbaker.discord.swrpg.roller.DiceTower;
 
 
 public class JdbiService implements DatabaseService {

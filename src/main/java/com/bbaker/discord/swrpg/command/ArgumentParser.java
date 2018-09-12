@@ -1,11 +1,11 @@
-package com.bbaker.discord.swrpg.roller;
+package com.bbaker.discord.swrpg.command;
 
 import java.util.Iterator;
 import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bbaker.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public class ArgumentParser {
 

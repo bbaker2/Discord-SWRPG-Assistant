@@ -5,12 +5,12 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
-import com.bbaker.database.DatabaseService;
-import com.bbaker.database.JdbiService;
-import com.bbaker.discord.swrpg.DestinyCommand;
-import com.bbaker.discord.swrpg.RollerCommands;
-import com.bbaker.discord.swrpg.roller.EmojiService;
-import com.bbaker.exceptions.SetupException;
+import com.bbaker.discord.swrpg.command.impl.DestinyCommand;
+import com.bbaker.discord.swrpg.command.impl.RollerCommands;
+import com.bbaker.discord.swrpg.database.DatabaseService;
+import com.bbaker.discord.swrpg.database.JdbiService;
+import com.bbaker.discord.swrpg.exceptions.SetupException;
+import com.bbaker.discord.swrpg.printer.EmojiService;
 
 import de.btobastian.sdcf4j.CommandHandler;
 import de.btobastian.sdcf4j.handler.JavacordHandler;

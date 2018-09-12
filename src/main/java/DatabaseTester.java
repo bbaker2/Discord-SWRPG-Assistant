@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import com.bbaker.database.JdbiService;
 import com.bbaker.discord.swrpg.die.RollableDie;
+import com.bbaker.discord.swrpg.exceptions.SetupException;
+import com.bbaker.discord.swrpg.database.JdbiService;
 import com.bbaker.discord.swrpg.die.DieType;
-import com.bbaker.exceptions.SetupException;
 
 public class DatabaseTester {
 

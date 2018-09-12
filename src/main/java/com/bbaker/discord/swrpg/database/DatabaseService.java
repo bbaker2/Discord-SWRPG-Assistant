@@ -1,10 +1,10 @@
-package com.bbaker.database;
+package com.bbaker.discord.swrpg.database;
 
 import java.util.List;
 
 import com.bbaker.discord.swrpg.destiny.DestinyTracker;
 import com.bbaker.discord.swrpg.die.RollableDie;
-import com.bbaker.discord.swrpg.table.impl.DiceTower;
+import com.bbaker.discord.swrpg.roller.DiceTower;
 
 public interface DatabaseService {
 

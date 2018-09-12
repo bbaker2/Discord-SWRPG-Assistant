@@ -1,7 +1,5 @@
 package com.bbaker.discord.swrpg.die;
 
-import com.bbaker.discord.swrpg.table.impl.DieFace;
-
 public class DieFaceBuilder {
 	
 	public static final int CHECK = 			0;

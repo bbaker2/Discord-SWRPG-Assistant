@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.table.impl;
+package com.bbaker.discord.swrpg.roller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.die.Result;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
-import com.bbaker.discord.swrpg.table.Result;
-import com.bbaker.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public class DiceTower implements TableResult {
     public static final String OUT_OF_BOUNDS_MSG = "Please only reroll between 1 and %d for %s";

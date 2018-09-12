@@ -1,7 +1,5 @@
 package com.bbaker.discord.swrpg.die;
 
-import com.bbaker.discord.swrpg.table.Result;
-
 public interface DieResult extends Result {
 	
 	/**

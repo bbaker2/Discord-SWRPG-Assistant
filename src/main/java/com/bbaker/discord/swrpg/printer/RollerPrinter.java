@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.roller;
+package com.bbaker.discord.swrpg.printer;
 
 import java.util.Collection;
 import java.util.List;

@@ -21,12 +21,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
-import com.bbaker.database.DatabaseService;
+import com.bbaker.discord.swrpg.command.impl.RollerCommands;
+import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
-import com.bbaker.discord.swrpg.roller.RollerPrinter;
-import com.bbaker.discord.swrpg.table.impl.DiceTower;
+import com.bbaker.discord.swrpg.printer.RollerPrinter;
+import com.bbaker.discord.swrpg.roller.DiceTower;
 
 class RollerCommandsTest {
 

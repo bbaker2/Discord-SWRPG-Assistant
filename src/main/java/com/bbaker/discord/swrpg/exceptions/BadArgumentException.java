@@ -1,9 +1,9 @@
-package com.bbaker.exceptions;
+package com.bbaker.discord.swrpg.exceptions;
 
 import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
-import com.bbaker.discord.swrpg.roller.EmojiService;
+import com.bbaker.discord.swrpg.printer.EmojiService;
 
 public class BadArgumentException extends Exception {
 

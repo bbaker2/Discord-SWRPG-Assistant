@@ -1,12 +1,12 @@
-package com.bbaker.discord.swrpg;
+package com.bbaker.discord.swrpg.command.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 
-import com.bbaker.database.DatabaseService;
-import com.bbaker.discord.swrpg.roller.ArgumentParser;
+import com.bbaker.discord.swrpg.command.ArgumentParser;
+import com.bbaker.discord.swrpg.database.DatabaseService;
 
 public abstract class BasicCommand {
     public static final String ERROR_MSG = "Woops, I ran into an error.";

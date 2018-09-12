@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.roller.impl;
+package com.bbaker.discord.swrpg.printer;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -7,7 +7,6 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.emoji.KnownCustomEmoji;
 
 import com.bbaker.discord.swrpg.die.Die;
-import com.bbaker.discord.swrpg.roller.EmojiService;
 
 public class EmojiServiceImpl implements EmojiService {
 

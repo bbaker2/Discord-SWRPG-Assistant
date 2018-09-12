@@ -1,6 +1,6 @@
 package com.bbaker.discord.swrpg.destiny;
 
-import com.bbaker.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public class DestinyTracker {
 

@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.table;
+package com.bbaker.discord.swrpg.die;
 
 public interface Result {
 
