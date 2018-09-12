@@ -1,25 +1,26 @@
-package com.bbaker.discord.swrpg.roller;
+package com.bbaker.discord.swrpg.roller.impl;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.roller.DiceHandler;
 import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
 public class RollerDiceHandlerImpl extends DiceHandler {
 
 
     @Override
-    public boolean evaluate(DiceTower table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) {
+    public boolean evaluate(DiceTower table, DieType dt, OptionalInt leftNumeric, OptionalInt rightNumeric) {
         int total = 0;
         boolean useDefault = true;
 
         if(leftNumeric.isPresent()) {
-            total += leftNumeric.get();
+            total += leftNumeric.getAsInt();
             useDefault = false;
         }
 
         if(rightNumeric.isPresent()) {
-            total += rightNumeric.get();
+            total += rightNumeric.getAsInt();
             useDefault = false;
         }
 

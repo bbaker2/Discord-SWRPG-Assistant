@@ -1,129 +1,135 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>bbaker.discord.swrpg</groupId>
-	<artifactId>dswrpga</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>SWRPG Assistant Bot</name>
-	<description>A tool for players and GMs on Discord</description>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>bbaker.discord.swrpg</groupId>
+  <artifactId>dswrpga</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>SWRPG Assistant Bot</name>
+  <description>A tool for players and GMs on Discord</description>
 
 
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
 
-	<build>
-		<!-- <sourceDirectory>${basedir}/src/main/java</sourceDirectory> <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
-		<!-- <outputDirectory>${basedir}/target/classes</outputDirectory> <testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory> -->
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
+  <build>
+    <!-- <sourceDirectory>${basedir}/src/main/java</sourceDirectory> <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
+    <!-- <outputDirectory>${basedir}/target/classes</outputDirectory> <testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory> -->
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
 
-		</plugins>
-	</build>
+    </plugins>
+  </build>
 
 
-	<repositories>
-		<repository>
-			<id>javacord-repo</id>
-			<url>http://repo.bastian-oppermann.de</url>
-		</repository>
-		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+  <repositories>
+    <repository>
+      <id>javacord-repo</id>
+      <url>http://repo.bastian-oppermann.de</url>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.jdbi</groupId>
-				<artifactId>jdbi3-bom</artifactId>
-				<type>pom</type>
-				<version>3.0.1</version>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jdbi</groupId>
+        <artifactId>jdbi3-bom</artifactId>
+        <type>pom</type>
+        <version>3.0.1</version>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.javacord</groupId>
-			<artifactId>javacord</artifactId>
-			<version>3.0.0</version>
-			<type>pom</type>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.javacord</groupId>
+      <artifactId>javacord</artifactId>
+      <version>3.0.0</version>
+      <type>pom</type>
+    </dependency>
 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.1.3</version>
-		</dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.3</version>
+    </dependency>
 
-		<dependency>
-			<groupId>de.btobastian.sdcf4j</groupId>
-			<artifactId>sdcf4j-core</artifactId>
-			<version>v1.0.10</version>
-		</dependency>
+    <dependency>
+      <groupId>de.btobastian.sdcf4j</groupId>
+      <artifactId>sdcf4j-core</artifactId>
+      <version>v1.0.10</version>
+    </dependency>
 
-		<dependency>
-			<groupId>de.btobastian.sdcf4j</groupId>
-			<artifactId>sdcf4j-javacord</artifactId>
-			<version>v1.0.10</version>
-		</dependency>
+    <dependency>
+      <groupId>de.btobastian.sdcf4j</groupId>
+      <artifactId>sdcf4j-javacord</artifactId>
+      <version>v1.0.10</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.196</version>
-		</dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.4.196</version>
+    </dependency>
 
-		<dependency>
-			<groupId>org.jdbi</groupId>
-			<artifactId>jdbi3-bom</artifactId>
-			<type>pom</type>
-			<version>3.0.1</version>
-			<scope>import</scope>
-		</dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-bom</artifactId>
+      <type>pom</type>
+      <version>3.0.1</version>
+      <scope>import</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>org.jdbi</groupId>
-			<artifactId>jdbi3-core</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-core</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.jdbi</groupId>
-			<artifactId>jdbi3-sqlobject</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-sqlobject</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.1.0</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.1.0</version>
+      <scope>test</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.1.0</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>2.21.0</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.1.0</version>
+      <scope>test</scope>
+    </dependency>
 
-	</dependencies>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.21.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>2.11.0</version>
+    </dependency>
+
+  </dependencies>
 </project>

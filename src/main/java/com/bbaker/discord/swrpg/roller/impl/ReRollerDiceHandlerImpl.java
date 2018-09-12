@@ -1,8 +1,9 @@
-package com.bbaker.discord.swrpg.roller;
+package com.bbaker.discord.swrpg.roller.impl;
 
-import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.bbaker.discord.swrpg.die.DieType;
+import com.bbaker.discord.swrpg.roller.DiceHandler;
 import com.bbaker.discord.swrpg.table.impl.DiceTower;
 import com.bbaker.exceptions.BadArgumentException;
 
@@ -12,10 +13,10 @@ public class ReRollerDiceHandlerImpl extends DiceHandler {
     public static final String ZERO_INDEX_MSG = "There is no 0th position. Did you mean index 1?";
 
     @Override
-    public boolean evaluate(DiceTower table, DieType dt, Optional<Integer> leftNumeric, Optional<Integer> rightNumeric) throws BadArgumentException {
+    public boolean evaluate(DiceTower table, DieType dt, OptionalInt leftNumeric, OptionalInt rightNumeric) throws BadArgumentException {
         if(leftNumeric.isPresent() && rightNumeric.isPresent()) {
             throw new BadArgumentException(TWO_INDEX_MSG,
-                    dt.name(), leftNumeric.get(), rightNumeric.get());
+                    dt, leftNumeric.getAsInt(), rightNumeric.getAsInt());
         }
 
         // If no numbers are provided, assume the 1st position

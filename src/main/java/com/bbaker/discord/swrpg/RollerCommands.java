@@ -1,7 +1,5 @@
 package com.bbaker.discord.swrpg;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,26 +8,24 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 
 import com.bbaker.database.DatabaseService;
-import com.bbaker.discord.swrpg.roller.ReRollerDiceHandlerImpl;
-import com.bbaker.discord.swrpg.roller.RollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
+import com.bbaker.discord.swrpg.roller.impl.ReRollerDiceHandlerImpl;
+import com.bbaker.discord.swrpg.roller.impl.RollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.table.impl.DiceTower;
 import com.bbaker.exceptions.BadArgumentException;
 
 import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
-public class RollerCommands  implements CommandExecutor {
+public class RollerCommands extends BasicCommand implements CommandExecutor {
 
-    public static final String ERROR_MSG = "Woops, I ran into an error.";
     private static final Logger logger = LogManager.getLogger(RollerCommands.class);
-    private DatabaseService dbService;
     private ArgumentHandler rollService;
     private ArgumentHandler rerollService;
     private RollerPrinter printer;
 
     public RollerCommands(DatabaseService db, DiscordApi discordApi) {
-        this.dbService = db;
+        super(db);
         //this.parsingService = new RollerHandler();
         this.rollService = new RollerDiceHandlerImpl();
         this.rerollService = new ReRollerDiceHandlerImpl();
@@ -92,11 +88,5 @@ public class RollerCommands  implements CommandExecutor {
             logger.debug("Exception thrown durng rerolls.", e);
             return ERROR_MSG;
         }
-    }
-
-    private List<String> getList(String message){
-        String[] args = message.split("\\s+");
-        List<String> tokens = Arrays.asList(Arrays.copyOfRange(args, 1, args.length));
-        return new ArrayList<String>(tokens);
     }
 }

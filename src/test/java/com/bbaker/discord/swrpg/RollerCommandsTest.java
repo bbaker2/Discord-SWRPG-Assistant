@@ -25,8 +25,8 @@ import com.bbaker.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
-import com.bbaker.discord.swrpg.roller.ReRollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
+import com.bbaker.discord.swrpg.roller.impl.ReRollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
 class RollerCommandsTest {

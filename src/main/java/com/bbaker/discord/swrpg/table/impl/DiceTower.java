@@ -87,15 +87,15 @@ public class DiceTower implements TableResult {
                 break;
 
             default:
-                throw new BadArgumentException(NOT_SUPPORTED_MSG, dt.name());
+                throw new BadArgumentException(NOT_SUPPORTED_MSG, dt);
         }
 
         if(targetDice.size() == 0) {
-            throw new BadArgumentException(NONE_EXIST_MSG, dt.name());
+            throw new BadArgumentException(NONE_EXIST_MSG, dt);
         }
 
         if(targetDice.size() <= index) {
-            throw new BadArgumentException(OUT_OF_BOUNDS_MSG, targetDice.size(), dt.name());
+            throw new BadArgumentException(OUT_OF_BOUNDS_MSG, targetDice.size(), dt);
         }
 
         RollableDie targetDie = targetDice.get(index);

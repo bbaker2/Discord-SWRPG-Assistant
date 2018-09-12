@@ -17,6 +17,7 @@ public class R5G8Tester {
 
     public static void main(String[] args) throws SetupException {
         FallbackLoggerConfiguration.setDebug(true);
+        FallbackLoggerConfiguration.setTrace(true);
 
         // Prepare Database
         try {
@@ -32,9 +33,11 @@ public class R5G8Tester {
         String token = "bot-token-here";
         DiscordApiBuilder dab = new DiscordApiBuilder().setAccountType(AccountType.BOT).setToken(token);
         DiscordApi api = dab.login().join();
+        EmojiService.setApi(api);
         CommandHandler ch = new JavacordHandler(api);
         ch.setDefaultPrefix("!");
         ch.registerCommand(new RollerCommands(dbService, api));
+        ch.registerCommand(new DestinyCommand(dbService));
 
 
     }

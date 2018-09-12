@@ -1,0 +1,24 @@
+2018-09-11 14:58:12 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) WHERE ID = ? "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) where ID = ? [42001-196]
+2018-09-11 14:58:12 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) WHERE ID = ? "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) where ID = ? [42001-196]
+2018-09-11 14:58:25 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) WHERE ID = ? "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) where ID = ? [42001-196]
+2018-09-11 14:58:25 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) WHERE ID = ? "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) where ID = ? [42001-196]
+2018-09-11 15:02:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) WHERE ID = ? "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) where ID = ? [42001-196]
+2018-09-11 15:02:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) WHERE ID = ? "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) where ID = ? [42001-196]
+2018-09-11 15:04:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) [42001-196]
+2018-09-11 15:04:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "INSERT INTO SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) VALUE[*](?, ?, ?) "; expected "DIRECT, SORTED, DEFAULT, VALUES, SET, (, WITH, SELECT, FROM"; SQL statement:
+insert into SWRPGAB_DESTINY (LIGHT, DARK, CHANNEL_ID) value(?, ?, ?) [42001-196]
