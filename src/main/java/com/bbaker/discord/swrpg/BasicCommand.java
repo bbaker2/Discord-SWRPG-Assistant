@@ -3,6 +3,7 @@ package com.bbaker.discord.swrpg;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalInt;
 
 import com.bbaker.database.DatabaseService;
 import com.bbaker.discord.swrpg.roller.ArgumentParser;
@@ -21,6 +22,26 @@ public abstract class BasicCommand {
         String[] args = message.split("\\s+");
         List<String> tokens = Arrays.asList(Arrays.copyOfRange(args, 1, args.length));
         return new ArrayList<String>(tokens);
+    }
+
+    protected int getTotal(OptionalInt left, OptionalInt right) {
+        int total = 0;
+        boolean useDefault = true;
+
+        if(left.isPresent()) {
+            total += left.getAsInt();
+            useDefault = false;
+        }
+
+        if(right.isPresent()) {
+            total += right.getAsInt();
+            useDefault = false;
+        }
+
+        if(useDefault) {
+            total = 1;
+        }
+        return total;
     }
 
 }

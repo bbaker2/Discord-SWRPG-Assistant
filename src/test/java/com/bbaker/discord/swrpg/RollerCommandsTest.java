@@ -26,7 +26,6 @@ import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.die.TableResult;
 import com.bbaker.discord.swrpg.roller.RollerPrinter;
-import com.bbaker.discord.swrpg.roller.impl.ReRollerDiceHandlerImpl;
 import com.bbaker.discord.swrpg.table.impl.DiceTower;
 
 class RollerCommandsTest {
@@ -150,11 +149,11 @@ class RollerCommandsTest {
         String expected, response;
 
         response = rollerService.handleReroll(genMsg("!rr 1g2"));
-        expected = String.format(ReRollerDiceHandlerImpl.TWO_INDEX_MSG, DieType.ABILITY, 1, 2);
+        expected = String.format(RollerCommands.TWO_INDEX_MSG, DieType.ABILITY, 1, 2);
         assertEquals(expected, response, "A friendly error message should have been returned for having too many indexes");
 
         response = rollerService.handleReroll(genMsg("!rr 0g"));
-        expected = ReRollerDiceHandlerImpl.ZERO_INDEX_MSG;
+        expected = RollerCommands.ZERO_INDEX_MSG;
         assertEquals(expected, response, "A friendly error message should have been returned for having a 0-index");
 
 

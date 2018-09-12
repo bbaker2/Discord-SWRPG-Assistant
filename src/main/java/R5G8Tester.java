@@ -7,7 +7,9 @@ import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
 import com.bbaker.database.DatabaseService;
 import com.bbaker.database.JdbiService;
+import com.bbaker.discord.swrpg.DestinyCommand;
 import com.bbaker.discord.swrpg.RollerCommands;
+import com.bbaker.discord.swrpg.roller.EmojiService;
 import com.bbaker.exceptions.SetupException;
 
 import de.btobastian.sdcf4j.CommandHandler;

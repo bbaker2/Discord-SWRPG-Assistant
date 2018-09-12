@@ -1,7 +1,6 @@
 package com.bbaker.discord.swrpg;
 
 import java.util.List;
-import java.util.OptionalInt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,23 +126,4 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
         });
     }
 
-    private int getTotal(OptionalInt left, OptionalInt right) {
-        int total = 0;
-        boolean useDefault = true;
-
-        if(left.isPresent()) {
-            total += left.getAsInt();
-            useDefault = false;
-        }
-
-        if(right.isPresent()) {
-            total += right.getAsInt();
-            useDefault = false;
-        }
-
-        if(useDefault) {
-            total = 1;
-        }
-        return total;
-    }
 }
