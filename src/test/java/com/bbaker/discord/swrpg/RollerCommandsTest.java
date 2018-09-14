@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
@@ -29,19 +27,13 @@ import com.bbaker.discord.swrpg.die.TableResult;
 import com.bbaker.discord.swrpg.printer.RollerPrinter;
 import com.bbaker.discord.swrpg.roller.DiceTower;
 
-class RollerCommandsTest {
+class RollerCommandsTest extends CommonUtils{
 
-    private static final long USER_ID = 11111111;
-    private static final long CHANNEL_ID = 22222222;
-
-    private DatabaseService dbService;
     private DiscordApi api;
     private List<RollableDie> storedDice;
 
     @BeforeEach
     public void setup() {
-        FallbackLoggerConfiguration.setDebug(true);
-        FallbackLoggerConfiguration.setTrace(true);
         storedDice = new ArrayList<RollableDie>();
         api = mock(DiscordApi.class);
         dbService = mock(DatabaseService.class);
@@ -56,16 +48,6 @@ class RollerCommandsTest {
             return dt;
 
         }).when(dbService).retrieveDiceResults(anyLong(), anyLong());
-    }
-
-    public Message genMsg(String content) {
-        Message msg = mock(Message.class, Mockito.RETURNS_DEEP_STUBS);
-
-        when(msg.getAuthor().getId()).thenReturn(USER_ID);
-        when(msg.getChannel().getId()).thenReturn(CHANNEL_ID);
-        when(msg.getContent()).thenReturn(content);
-
-        return msg;
     }
 
     @Test

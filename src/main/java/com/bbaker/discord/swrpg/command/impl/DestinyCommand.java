@@ -14,7 +14,6 @@ import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 import com.bbaker.discord.swrpg.printer.DestinyPrinter;
-import com.bbaker.discord.swrpg.printer.EmojiService;
 
 import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
@@ -58,7 +57,7 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
                 setDestiny(destiny, tokens);
                 break;
             case "reset":
-                extraContent = "Destiny cleared";
+                extraContent = printer.cleared();
                 destiny.setSides(0, 0);
                 break;
             }
@@ -85,9 +84,8 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
             side = destiny.getDarkSide();
             die = Die.DARK;
         }
-        EmojiService emojies = EmojiService.getInstance();
         if(--side < 0) {
-            return String.format("There are no %s to flip", emojies.findEmoji(die));
+            return printer.noFlips(die);
         }
 
         if(flipLight) {
@@ -97,7 +95,7 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
             destiny.adjustLightSide(1);
             destiny.adjustDarkSide(-1);
         }
-        return String.format("Flipping a %s", emojies.findEmoji(die));
+        return printer.yesFlips(die);
     }
 
     private String rollDestiny(DestinyTracker destiny) {
@@ -125,6 +123,14 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
             }
             return true;
         });
+    }
+
+    /**
+     * Used mostly for unit testing
+     * @param printer most likely a mock of the printer class
+     */
+    public void setPrinter(DestinyPrinter printer) {
+        this.printer = printer;
     }
 
 }

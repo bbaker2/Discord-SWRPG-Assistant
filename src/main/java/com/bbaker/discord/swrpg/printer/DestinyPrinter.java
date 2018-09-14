@@ -12,8 +12,8 @@ public class DestinyPrinter {
         if(destiny.getLightSide() + destiny.getDarkSide() == 0) {
             return sb.append("`none`").toString();
         } else {
-            append(Die.LIGHT, destiny.getLightSide(), sb);
-            append(Die.DARK, destiny.getDarkSide(), sb);
+            append(Die.LIGHT, 	destiny.getLightSide(), sb);
+            append(Die.DARK, 	destiny.getDarkSide(), 	sb);
         }
 
         return sb.toString();
@@ -28,6 +28,18 @@ public class DestinyPrinter {
 
     public String printRoll(Die forceDie) {
         return "Destiny roll result: " + emojies.findEmoji(forceDie);
+    }
+
+    public String noFlips(Die die) {
+        return String.format("There are no %s to flip", emojies.findEmoji(die));
+    }
+
+    public String yesFlips(Die die) {
+        return "Flipping a " + emojies.findEmoji(die);
+    }
+
+    public String cleared() {
+        return "Destiny cleared";
     }
 
 }
