@@ -1,6 +1,8 @@
 package com.bbaker.discord.swrpg.command;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +16,27 @@ public class ArgumentParser {
     private static final int DIE_TOKEN = 2;
     private static final int RIGHT_COUNT = 3;
 
+
     public boolean processArguments(Iterator<String> args, ArgumentEvaluator eval) throws BadArgumentException {
+        return processArguments(args, (token)->true, eval);
+    }
+
+    public boolean processArguments(Iterator<String> args, ArgumentChecker checker, ArgumentEvaluator eval) throws BadArgumentException {
+        return processArguments(args, new ArgumentProcessor() {
+
+            @Override
+            public boolean isToken(String token) {
+                return checker.isToken(token);
+            }
+
+            @Override
+            public boolean evaluate(String token, OptionalInt left, OptionalInt right) throws BadArgumentException {
+                return eval.evaluate(token, left, right);
+            }
+        });
+    }
+
+    public boolean processArguments(Iterator<String> args, ArgumentProcessor processor) throws BadArgumentException {
         boolean allRemoved = true;
         Matcher m; String token; OptionalInt leftNum; OptionalInt rightNum; boolean success;
         while(args.hasNext()) {
@@ -27,9 +49,9 @@ public class ArgumentParser {
                 rightNum = getCount(m.group(RIGHT_COUNT)); // right side numeric
                 if(token != null) {
                     // If no die was found immediately, split apart into a char array and try again
-                    if(eval.evaluate(token, leftNum, rightNum)) {
+                    if(processor.evaluate(token, leftNum, rightNum)) {
                         args.remove(); // remove since a die was found
-                    } else if (tryAgain(token, eval)) {
+                    } else if (tryAgain(token, processor)) {
                         allRemoved = false;
                     }
                 } else {
@@ -48,14 +70,24 @@ public class ArgumentParser {
      * @return TRUE if ALL characters can be converted to a die. Otherwise FALSE
      * @throws BadArgumentException
      */
-    private boolean tryAgain(String value, ArgumentEvaluator eval) throws BadArgumentException {
+    private boolean tryAgain(String value, ArgumentProcessor process) throws BadArgumentException {
         char[] splitUp = value.toCharArray();
+        List<String> tokens = new ArrayList<String>();
         String token;
-        for(int i = 0; i < splitUp.length; i++) {
-            token = Character.toString(splitUp[i]);
-            if(!eval.evaluate(token, OptionalInt.empty(), OptionalInt.empty())) {
+        for(char c : splitUp) {
+            token = Character.toString(c);
+            if(process.isToken(token)) {
+                tokens.add(token);
+            } else {
+                return false; // Then we cannot process this
+            }
+        }
+
+        for(String t : tokens) {
+            if(!process.evaluate(t, OptionalInt.empty(), OptionalInt.empty())) { // actually process this
                 return false;
             }
+
         }
         return true;
     }

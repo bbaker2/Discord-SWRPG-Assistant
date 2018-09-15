@@ -45,7 +45,7 @@ public class RollerCommands extends BasicCommand implements CommandExecutor {
             List<String> tokens = getList(message.getContent());
             DiceTower table = new DiceTower();
 
-            parser.processArguments(tokens.iterator(), (token, left, right)-> {
+            parser.processArguments(tokens.iterator(), RollerCommands::isToken, (token, left, right)-> {
                 DieType dieType = findDie(token);
                 if(dieType == null) {
                     return false;
@@ -81,7 +81,7 @@ public class RollerCommands extends BasicCommand implements CommandExecutor {
             if(tokens.isEmpty()) {
                 diceTower.roll(); // reroll all
             } else {
-                parser.processArguments(tokens.iterator(), (token, left, right) -> {
+                parser.processArguments(tokens.iterator(), RollerCommands::isToken, (token, left, right) -> {
                     DieType dieType = findDie(token);
                     if(left.isPresent() && right.isPresent()) {
                         throw new BadArgumentException(TWO_INDEX_MSG,
@@ -116,6 +116,10 @@ public class RollerCommands extends BasicCommand implements CommandExecutor {
             logger.debug("Exception thrown durng rerolls.", e);
             return ERROR_MSG;
         }
+    }
+
+    private static boolean isToken(String strToken) {
+        return findDie(strToken) != null;
     }
 
     public static DieType findDie(String strToken) {

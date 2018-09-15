@@ -6,6 +6,6 @@ import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public interface ArgumentEvaluator {
 
-    boolean evaluate(String token, OptionalInt left, OptionalInt right) throws BadArgumentException;
+	boolean evaluate(String token, OptionalInt left, OptionalInt right) throws BadArgumentException;
 
 }

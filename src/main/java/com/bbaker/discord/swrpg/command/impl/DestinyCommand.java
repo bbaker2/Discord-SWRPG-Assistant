@@ -107,7 +107,7 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
     }
 
     private void setDestiny(DestinyTracker destiny, List<String> tokens) throws BadArgumentException {
-        parser.processArguments(tokens.iterator(), (token, left, right)-> {
+        parser.processArguments(tokens.iterator(), DestinyCommand::isToken, (token, left, right)-> {
             int adjustment = getTotal(left, right);
             switch(token) {
                 case "light":
@@ -123,6 +123,18 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
             }
             return true;
         });
+    }
+
+    private static boolean isToken(String token) {
+        switch(token) {
+            case "light":
+            case "l":
+            case "dark":
+            case "d":
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
