@@ -14,6 +14,7 @@ import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 import com.bbaker.discord.swrpg.printer.DestinyPrinter;
+import com.bbaker.discord.swrpg.roller.DiceProcessor;
 
 import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
@@ -108,7 +109,7 @@ public class DestinyCommand extends BasicCommand implements CommandExecutor {
 
     private void setDestiny(DestinyTracker destiny, List<String> tokens) throws BadArgumentException {
         parser.processArguments(tokens.iterator(), DestinyCommand::isToken, (token, left, right)-> {
-            int adjustment = getTotal(left, right);
+            int adjustment = DiceProcessor.getTotal(left, right);
             switch(token) {
                 case "light":
                 case "l":

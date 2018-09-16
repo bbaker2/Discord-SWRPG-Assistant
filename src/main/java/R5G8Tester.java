@@ -6,6 +6,7 @@ import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
 import com.bbaker.discord.swrpg.command.impl.DestinyCommand;
+import com.bbaker.discord.swrpg.command.impl.InitiativeCommand;
 import com.bbaker.discord.swrpg.command.impl.RollerCommands;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.database.JdbiService;
@@ -38,8 +39,9 @@ public class R5G8Tester {
         EmojiService.setApi(api);
         CommandHandler ch = new JavacordHandler(api);
         ch.setDefaultPrefix("!");
-        ch.registerCommand(new RollerCommands(dbService, api));
+        ch.registerCommand(new RollerCommands(dbService));
         ch.registerCommand(new DestinyCommand(dbService));
+        ch.registerCommand(new InitiativeCommand(dbService));
 
 
     }

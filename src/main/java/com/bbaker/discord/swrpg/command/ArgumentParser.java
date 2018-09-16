@@ -48,11 +48,12 @@ public class ArgumentParser {
                 leftNum = getCount(m.group(LEFT_COUNT)); // left side numeric
                 rightNum = getCount(m.group(RIGHT_COUNT)); // right side numeric
                 if(token != null) {
-                    // If no die was found immediately, split apart into a char array and try again
                     if(processor.evaluate(token, leftNum, rightNum)) {
                         args.remove(); // remove since a die was found
+                    // If no die was found immediately, split apart into a char array and try again
                     } else if (tryAgain(token, processor)) {
                         allRemoved = false;
+                        args.remove(); // remove since the tryAgain was successful
                     }
                 } else {
                     allRemoved = false;
