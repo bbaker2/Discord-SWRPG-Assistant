@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.bbaker.discord.swrpg.destiny.DestinyTracker;
 import com.bbaker.discord.swrpg.die.RollableDie;
+import com.bbaker.discord.swrpg.initiative.InitCharacter;
+import com.bbaker.discord.swrpg.initiative.InitiativeTracker;
 import com.bbaker.discord.swrpg.roller.DiceTower;
-
 public interface DatabaseService {
 
     public static final long IS_NEW = -1;
@@ -42,5 +43,14 @@ public interface DatabaseService {
      * @return
      */
     void storeDestiny(long chanelId, DestinyTracker tracker);
+
+    /**
+     * For retrieving ordered {@link InitCharacter}
+     * @param channelId the channel the initiative is managed from
+     * @return a populated {@link InitiativeTracker}
+     */
+    InitiativeTracker retrieveInitiative(long channelId);
+
+    void storeInitiative(long channelId, List<InitCharacter> init);
 
 }

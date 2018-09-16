@@ -17,6 +17,9 @@ import com.bbaker.discord.swrpg.die.Die;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.SetupException;
+import com.bbaker.discord.swrpg.initiative.InitCharacter;
+import com.bbaker.discord.swrpg.initiative.CharacterType;
+import com.bbaker.discord.swrpg.initiative.InitiativeTracker;
 import com.bbaker.discord.swrpg.roller.DiceTower;
 
 
@@ -27,6 +30,7 @@ public class JdbiService implements DatabaseService {
 
     public static final String TABLE_ROLL = "ROLL";
     public static final String TABLE_DESTINY = "DESTINY";
+    public static final String TABLE_INIT = "INIT";
 
     public JdbiService(Properties p) throws SetupException {
         dbProps = new Properties();
@@ -106,6 +110,27 @@ public class JdbiService implements DatabaseService {
                 handler.execute(tableInsert);
             });
             createdTables = true;
+        }
+
+        if(!hasTable(TABLE_INIT)) {
+            System.out.println("Creating " + TABLE_INIT);
+            String tableInsert = query(
+                    "CREATE TABLE %s ("+
+                        "id 			BIGINT 			SERIAL PRIMARY KEY, "+
+                        "channel_id		BIGINT 			NOT NULL, "+
+                        "type 			VARCHAR(100) 	NOT NULL, "+
+                        "label 			VARCHAR(255) 	NOT NULL, "+
+                        "round 			INT				NOT NULL, "+
+                        "uses_order 	BIT 			NOT NULL, "+
+                        "success 		INT, "+
+                        "advantage 		INT, "+
+                        "order_index	INT "+
+                    ");"
+                    ,TABLE_INIT);
+
+            jdbi.useHandle(handler -> {
+                handler.execute(tableInsert);
+            });
         }
         return createdTables;
     }
@@ -260,6 +285,67 @@ public class JdbiService implements DatabaseService {
         } else {
             return new DestinyTracker(0, 0, IS_NEW);
         }
+    }
+
+    @Override
+    public InitiativeTracker retrieveInitiative(long channelId) {
+
+        String query =  query("select LABEL, SUCCESS, ADVANTAGE, ROUND, ORDER_INDEX, USES_ORDER, TYPE "
+                            + "from %s where CHANNEL_ID = :channelId "
+                            + "order by ORDER_INDEX asc, SUCCESS desc, ADVANTAGE desc", TABLE_INIT);
+        List<InitCharacter> results = jdbi.withHandle(
+                handle -> handle.createQuery(query)
+                    .bind("channelId", channelId)
+                    .map((rs, col, ctx)
+                            -> new InitCharacter(
+                                    rs.getString("LABEL"),
+                                    rs.getInt("SUCCESS"),
+                                    rs.getInt("ADVANTAGE"),
+                                    rs.getInt("ROUND"),
+                                    rs.getInt("ORDER_INDEX"),
+                                    rs.getBoolean("USES_ORDER") || false,
+                                    CharacterType.valueOf(rs.getString("TYPE"))
+                            ))
+                    .list()
+        );
+
+        return new InitiativeTracker(results);
+    }
+
+    @Override
+    public void storeInitiative(long channelId, List<InitCharacter> init) {
+        String query;
+        try (Handle handle = jdbi.open()) {
+            handle.begin();
+
+            // First clear the old values
+            query = query("delete from %s where CHANNEL_ID = :channelId", TABLE_INIT);
+            handle.createUpdate(query)
+                .bind("channelId", channelId)
+                .execute();
+
+            // The insert the new ones
+            if(init.size() > 0) {
+                query = query("insert into %s(LABEL, SUCCESS, ADVANTAGE, ROUND, ORDER_INDEX, USES_ORDER, TYPE, CHANNEL_ID)"+
+                              "VALUES(:label, :success, :advantage, :round, :order, :usesOrder, :type, :channelId)", TABLE_INIT);
+                PreparedBatch batch = handle.prepareBatch(query);
+                for(InitCharacter ic : init) {
+                    batch.bind("label", 	ic.getLabel());
+                    batch.bind("success", 	ic.getSuccess());
+                    batch.bind("advantage",	ic.getAdvantage());
+                    batch.bind("round", 	ic.getRound());
+                    batch.bind("order", 	ic.getOrder());
+                    batch.bind("usesOrder",	ic.usesOrder());
+                    batch.bind("type", 		ic.getType().name());
+                    batch.bind("channelId", channelId);
+                    batch.add();
+                }
+                batch.execute();
+            }
+
+            handle.commit();
+        }
+
     }
 
 }

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.javacord.api.DiscordApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
@@ -29,13 +28,11 @@ import com.bbaker.discord.swrpg.roller.DiceTower;
 
 class RollerCommandsTest extends CommonUtils{
 
-    private DiscordApi api;
     private List<RollableDie> storedDice;
 
     @BeforeEach
     public void setup() {
         storedDice = new ArrayList<RollableDie>();
-        api = mock(DiscordApi.class);
         dbService = mock(DatabaseService.class);
 
         doAnswer(invocation ->
@@ -52,7 +49,7 @@ class RollerCommandsTest extends CommonUtils{
 
     @Test
     public void handleRollTest() {
-        RollerCommands rollerService = new RollerCommands(dbService, api);
+        RollerCommands rollerService = new RollerCommands(dbService);
 
         RollerPrinter mockPrinter = mock(RollerPrinter.class);
         rollerService.setPrinter(mockPrinter);
@@ -94,7 +91,7 @@ class RollerCommandsTest extends CommonUtils{
 
     @Test
     public void basicReRollTest() {
-        RollerCommands rollerService = new RollerCommands(dbService, api);
+        RollerCommands rollerService = new RollerCommands(dbService);
 
         RollerPrinter mockPrinter = mock(RollerPrinter.class);
         rollerService.setPrinter(mockPrinter);
@@ -124,7 +121,7 @@ class RollerCommandsTest extends CommonUtils{
 
     @Test
     public void badReRollTest() {
-        RollerCommands rollerService = new RollerCommands(dbService, api);
+        RollerCommands rollerService = new RollerCommands(dbService);
 
         RollerPrinter mockPrinter = mock(RollerPrinter.class);
 
@@ -157,7 +154,7 @@ class RollerCommandsTest extends CommonUtils{
 
     @Test
     public void accuracyReRollTest() {
-        RollerCommands rollerService = new RollerCommands(dbService, api);
+        RollerCommands rollerService = new RollerCommands(dbService);
 
         RollableDie doNotRoll = mock(RollableDie.class, Mockito.RETURNS_DEEP_STUBS);
         when(doNotRoll.getType()).thenReturn(DieType.ABILITY);

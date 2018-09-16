@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 import com.bbaker.discord.swrpg.printer.RollerPrinter;
+import com.bbaker.discord.swrpg.roller.DiceProcessor;
 import com.bbaker.discord.swrpg.roller.DiceTower;
 
 import de.btobastian.sdcf4j.Command;
@@ -25,9 +25,9 @@ public class RollerCommands extends BasicCommand implements CommandExecutor {
 
     private RollerPrinter printer;
 
-    public RollerCommands(DatabaseService db, DiscordApi discordApi) {
+    public RollerCommands(DatabaseService db) {
         super(db);
-        this.printer = new RollerPrinter(discordApi);
+        this.printer = new RollerPrinter();
     }
 
     /**
@@ -45,15 +45,7 @@ public class RollerCommands extends BasicCommand implements CommandExecutor {
             List<String> tokens = getList(message.getContent());
             DiceTower table = new DiceTower();
 
-            parser.processArguments(tokens.iterator(), RollerCommands::isToken, (token, left, right)-> {
-                DieType dieType = findDie(token);
-                if(dieType == null) {
-                    return false;
-                }
-                int total = getTotal(left, right);
-                table.addDie(dieType, total);
-                return true;
-            });
+            parser.processArguments(tokens.iterator(), new DiceProcessor(table));
 
 
             table.roll(); // actually roll the dice
@@ -118,7 +110,7 @@ public class RollerCommands extends BasicCommand implements CommandExecutor {
         }
     }
 
-    private static boolean isToken(String strToken) {
+    public static boolean isToken(String strToken) {
         return findDie(strToken) != null;
     }
 
