@@ -49,7 +49,7 @@ public interface DatabaseService {
      * @param channelId the channel the initiative is managed from
      * @return a populated {@link InitiativeTracker}
      */
-    InitiativeTracker getInitiative(long channelId);
+    InitiativeTracker retrieveInitiative(long channelId);
 
     void storeInitiative(long channelId, List<InitCharacter> init);
 

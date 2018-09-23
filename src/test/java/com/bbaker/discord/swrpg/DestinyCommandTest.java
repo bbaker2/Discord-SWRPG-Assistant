@@ -2,7 +2,6 @@ package com.bbaker.discord.swrpg;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

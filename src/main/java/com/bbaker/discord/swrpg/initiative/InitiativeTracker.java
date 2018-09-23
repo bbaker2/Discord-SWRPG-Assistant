@@ -9,6 +9,7 @@ import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public class InitiativeTracker {
 
+    public static final String WRONG_SIZE_MSG = "Need exactly %d characters. Was given %d.";
     public static final int DNE = -1;
     private static final Comparator<InitCharacter> sorter = new CharacterSort();
 
@@ -24,7 +25,7 @@ public class InitiativeTracker {
     }
 
     private void cacheSelf() {
-        this.round = init.isEmpty() ? 0 : init.get(0).getRound();
+        this.round = init.isEmpty() ? 1 : init.get(0).getRound();
         this.turn = 0;
         this.canRoll = true;
         for(InitCharacter c : init) {
@@ -56,8 +57,6 @@ public class InitiativeTracker {
             dieResult.getCheck(),
             dieResult.getConsequence(),
             round,
-            DNE,
-            false,
             type
         );
 
@@ -67,11 +66,15 @@ public class InitiativeTracker {
 
     }
 
-    public void adjustTurn(int adjustment) {
-        turn += adjustment;
+    public void adjustTurn(int adjustment, String label) {
+        int max = init.size();
+        int unsafeTurn = turn + adjustment;
+        int oldTurn = turn;
+        round += unsafeTurn / max;
+        turn = unsafeTurn % max;
 
         InitCharacter c;
-        for(int i = 0; i < init.size(); i++) {
+        for(int i = 0; i < max; i++) {
             c = init.get(i);
             // All characters before the target turn should be updated to the primary round
             if(i < turn-1) { // since turns start at 1 and arrays start at 0, we adjust the turn to match array indexes
@@ -80,13 +83,16 @@ public class InitiativeTracker {
             } else {
                 c.setRound(round - 1);
             }
+
+            if(i > oldTurn -1 && i <= turn - 1) {
+                c.setLabel(label);
+            }
         }
     }
 
     public void reorder(List<CharacterType> charTypes) throws BadArgumentException {
-        if(init.size() == charTypes.size()) {
-            throw new BadArgumentException("Need exactly %d characters. Was given %d.",
-                    init.size(), charTypes.size());
+        if(init.size() != charTypes.size()) {
+            throw new BadArgumentException(WRONG_SIZE_MSG, init.size(), charTypes.size());
         }
 
         InitCharacter c;
@@ -98,12 +104,19 @@ public class InitiativeTracker {
         }
     }
 
+    /**
+     * Truncates the old {@link #init}, sets {@link #canRoll} to false.
+     * <br/>
+     * They will be stored in the database in the order given
+     * @param charTypes the characters that truncate the old {@link #init}
+     * @throws BadArgumentException
+     */
     public void forceSet(List<CharacterType> charTypes) throws BadArgumentException {
         this.init.clear();
 
         for(int i = 0; i < charTypes.size(); i++) {
             this.init.add(
-                new InitCharacter("", DNE, DNE, round, i, false, charTypes.get(i))
+                new InitCharacter("", round, i, charTypes.get(i))
             );
         }
 

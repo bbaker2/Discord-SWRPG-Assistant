@@ -1,5 +1,7 @@
 package com.bbaker.discord.swrpg.initiative;
 
+import org.h2.util.StringUtils;
+
 public class InitCharacter {
 
     private String label;
@@ -9,6 +11,14 @@ public class InitCharacter {
     private int order;
     private boolean usesOrder;
     private CharacterType type;
+
+    public InitCharacter(String label, int order, int round, CharacterType type) {
+        this(label, InitiativeTracker.DNE, InitiativeTracker.DNE, round, order, true, type);
+    }
+
+    public InitCharacter(String label, int success, int advantage, int round, CharacterType type) {
+        this(label, success, advantage, round, InitiativeTracker.DNE, false, type);
+    }
 
     public InitCharacter(String label, int success, int advantage, int round, int order, boolean usesOrder, CharacterType type) {
         this.label = label;
@@ -66,6 +76,26 @@ public class InitCharacter {
 
     public void setType(CharacterType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof InitCharacter) {
+            InitCharacter that = (InitCharacter)obj;
+            return this.getType() == that.getType()
+                    && this.getRound() == that.getRound()
+                    && this.getAdvantage() == that.getAdvantage()
+                    && this.getSuccess() == that.getSuccess()
+                    && this.usesOrder == that.usesOrder()
+                    && this.getOrder() == that.getOrder()
+                    && StringUtils.equals(this.getLabel(), that.getLabel());
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%4s [%2d %2d %5s %2d] '%s'", type.name(), success, advantage, usesOrder, order, label);
     }
 
 

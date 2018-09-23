@@ -288,9 +288,11 @@ public class JdbiService implements DatabaseService {
     }
 
     @Override
-    public InitiativeTracker getInitiative(long channelId) {
+    public InitiativeTracker retrieveInitiative(long channelId) {
 
-        String query =  query("select LABEL, SUCCESS, ADVANTAGE, ROUND, ORDER_INDEX, USES_ORDER, TYPE from %s where CHANNEL_ID = :channelId", TABLE_INIT);
+        String query =  query("select LABEL, SUCCESS, ADVANTAGE, ROUND, ORDER_INDEX, USES_ORDER, TYPE "
+                            + "from %s where CHANNEL_ID = :channelId "
+                            + "order by ORDER_INDEX asc, SUCCESS desc, ADVANTAGE desc", TABLE_INIT);
         List<InitCharacter> results = jdbi.withHandle(
                 handle -> handle.createQuery(query)
                     .bind("channelId", channelId)

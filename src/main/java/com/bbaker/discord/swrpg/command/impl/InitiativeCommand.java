@@ -2,8 +2,11 @@ package com.bbaker.discord.swrpg.command.impl;
 
 import java.util.Arrays;
 import java.util.IllegalFormatException;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.Message;
 
 import com.bbaker.discord.swrpg.command.ArgumentParser;
@@ -22,8 +25,15 @@ import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
 public class InitiativeCommand extends BasicCommand implements CommandExecutor {
+    public static final String NO_CHARACTER_MSG = "No characters were provided. Please include 'pc', 'npc', 'dpc', 'dnpc'. No changes were made to the initiative.";
+
+    public static final String NO_DIE_MSG = "No die were provided. No changes were made to the initiative.";
+
+    private static final Logger logger = LogManager.getLogger(InitiativeCommand.class);
+    private static final String NUMERIC_RGX = "[0-9]+";
     RollerPrinter rollerPrinter;
     InitiativePrinter initPrinter;
+
 
     public InitiativeCommand(DatabaseService dbService) {
         super(dbService);
@@ -34,55 +44,61 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
 
     @Command(aliases = {"i", "init", "initiative"}, description = "Manages the initiatives", usage = "!init roll pc gg")
-    public String handleInit(Message message) throws BadArgumentException {
-        List<String> tokens = getList(message.getContent());
+    public String handleInit(Message message) {
+        try {
+            List<String> tokens = getList(message.getContent());
 
-        InitiativeTracker initTracker = dbService.getInitiative(message.getChannel().getId());
+            InitiativeTracker initTracker = dbService.retrieveInitiative(message.getChannel().getId());
 
-        if(tokens.isEmpty()) {
-            return initPrinter.printInit(initTracker);
+            if(tokens.isEmpty()) {
+                return initPrinter.printInit(initTracker);
+            }
+
+            String response = getResponse(tokens, initTracker);
+
+            dbService.storeInitiative(message.getChannel().getId(), initTracker.getInit());
+
+            return response + "\n" + initPrinter.printInit(initTracker);
+        } catch (BadArgumentException e) {
+            logger.debug(e);
+            return e.getMessage();
+        } catch (Exception e) {
+            logger.debug(e);
+            return ERROR_MSG;
         }
+    }
 
-        String response = "";
-
+    private String getResponse(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
         switch(tokens.remove(0)) {
             case "roll":
             case "r":
-                response = rollCharacter(tokens, initTracker);
-                break;
+                return rollCharacter(tokens, initTracker);
             case "reorder":
-                response = reorder(tokens, initTracker);
-                break;
+                return reorder(tokens, initTracker);
             case "set":
             case "s":
-                response = set(tokens, initTracker);
-                break;
+                return set(tokens, initTracker);
             case "confirm":
             case "c":
-                response = confirmSet(initTracker);
+                return confirmSet(initTracker);
             case "reset":
                 initTracker.forceSet(Arrays.asList());
                 break;
             case "next":
             case "n":
-                response = next(tokens, initTracker);
-                break;
+                return next(tokens, initTracker);
             case "previous":
             case "p":
-                response = previous(initTracker);
-                break;
+                return previous(initTracker);
             case "kill":
             case "k":
-                response = kill(tokens, initTracker);
-                break;
+                return kill(tokens, initTracker);
             case "revive":
-                response = revive(tokens, initTracker);
-                break;
+                return revive(tokens, initTracker);
         }
 
-        dbService.storeInitiative(message.getChannel().getId(), initTracker.getInit());
+        return "";
 
-        return response + "\n" + initPrinter.printInit(initTracker);
     }
 
 
@@ -101,20 +117,11 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
 
         if(dice.isEmpty()) {
-            // throw error
+            throw new BadArgumentException(NO_DIE_MSG);
         }
-
-        if(rollResult.getCheck() < 0) {
-            // throw error
-        }
-
-        if(rollResult.getConsequence() < 0) {
-            // throw error
-        }
-
 
         if(newCharacters.isEmpty()) {
-            // throw error
+            throw new BadArgumentException(NO_CHARACTER_MSG);
         }
 
         String label = "";
@@ -143,9 +150,21 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
 
-    private String next(List<String> tokens, InitiativeTracker initTracker) {
-        // TODO Auto-generated method stub
-        return null;
+    private String next(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+
+        if(tokens.size() == 0) {
+            initTracker.adjustTurn(1, "");
+        } else if(tokens.size() == 1 && tokens.get(0).matches(NUMERIC_RGX)) {
+            initTracker.adjustTurn(Integer.valueOf(tokens.get(0)), "");
+        } else {
+            Iterator<String> tokenItr = tokens.iterator();
+            parser.processArguments(tokens.iterator(), (token, left, right) -> {
+                initTracker.adjustTurn(DiceProcessor.getTotal(left, right), token);
+                return true;
+            });
+        }
+
+        return initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
     }
 
 
@@ -161,15 +180,24 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
 
-    private String reorder(List<String> tokens, InitiativeTracker initTracker) {
-        // TODO Auto-generated method stub
-        return null;
+    private String reorder(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+        // Get pc, npc, dpc, and dnpc tokens
+        InitiativeProcessor initProcessor = new InitiativeProcessor();
+        parser.processArguments(tokens.iterator(), initProcessor);
+
+        initTracker.reorder(initProcessor.getCharacters());
+        return "Reorder successful";
     }
 
 
-    private String set(List<String> tokens, InitiativeTracker initTracker) {
-        // TODO Auto-generated method stub
-        return null;
+    private String set(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+        // Get pc, npc, dpc, and dnpc tokens
+        InitiativeProcessor initProcessor = new InitiativeProcessor();
+        parser.processArguments(tokens.iterator(), initProcessor);
+
+        initTracker.forceSet(initProcessor.getCharacters());
+
+        return "Init was force set.";
     }
 
 
@@ -189,6 +217,25 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
             return String.format(template, index);
         } catch (IllegalFormatException e) {
             return template;
+        }
+    }
+
+
+    public void setInitPrinter(InitiativePrinter initPrinter) {
+        this.initPrinter = initPrinter;
+    }
+
+    public void setRollPinter(RollerPrinter rollPrinter) {
+        this.rollerPrinter = rollPrinter;
+    }
+
+    private boolean isNext(String token) {
+        switch(token.toLowerCase()) {
+            case "n":
+            case "next":
+                return true;
+            default:
+                return false;
         }
     }
 
