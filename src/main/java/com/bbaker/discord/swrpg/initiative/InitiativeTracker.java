@@ -9,6 +9,7 @@ import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public class InitiativeTracker {
 
+    public static final String NEGATIVE_ROUND_MSG = "You cannot go prior to Round 1. No changes made to Initiative";
     public static final String WRONG_SIZE_MSG = "Need exactly %d characters. Was given %d.";
     public static final int DNE = -1;
     private static final Comparator<InitCharacter> sorter = new CharacterSort();
@@ -26,7 +27,7 @@ public class InitiativeTracker {
 
     private void cacheSelf() {
         this.round = init.isEmpty() ? 1 : init.get(0).getRound();
-        this.turn = 0;
+        this.turn = 1;
         this.canRoll = true;
         for(InitCharacter c : init) {
             if(c.getRound() <= round) {
@@ -66,27 +67,29 @@ public class InitiativeTracker {
 
     }
 
-    public void adjustTurn(int adjustment, String label) {
-        int max = init.size();
-        int unsafeTurn = turn + adjustment;
-        int oldTurn = turn;
-        round += unsafeTurn / max;
-        turn = unsafeTurn % max;
+    public void adjustTurn(int adjustment, String label) throws BadArgumentException {
+        int direction = adjustment < 0 ? -1 : 1;
 
         InitCharacter c;
-        for(int i = 0; i < max; i++) {
-            c = init.get(i);
-            // All characters before the target turn should be updated to the primary round
-            if(i < turn-1) { // since turns start at 1 and arrays start at 0, we adjust the turn to match array indexes
-                c.setRound(round);
-            // All other characters are forced into the previous round
-            } else {
-                c.setRound(round - 1);
+        for(int step = 0; step < Math.abs(adjustment); step++) {
+            turn+= direction;
+
+
+            if(turn <= 0) {
+                turn = init.size();
+                round--;
+            } else if(turn > init.size()) {
+                turn = 1;
+                round++;
             }
 
-            if(i > oldTurn -1 && i <= turn - 1) {
-                c.setLabel(label);
-            }
+            c = init.get(turn-1);
+            c.setRound(round);
+            c.setLabel(label);
+        }
+
+        if(round <= 0) {
+            throw new BadArgumentException(NEGATIVE_ROUND_MSG);
         }
     }
 

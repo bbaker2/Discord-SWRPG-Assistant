@@ -25,8 +25,8 @@ import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
 public class InitiativeCommand extends BasicCommand implements CommandExecutor {
+    public static final String EMPTY_INIT_MSG = "There are no characters in the initiative. Please add some first.";
     public static final String NO_CHARACTER_MSG = "No characters were provided. Please include 'pc', 'npc', 'dpc', 'dnpc'. No changes were made to the initiative.";
-
     public static final String NO_DIE_MSG = "No die were provided. No changes were made to the initiative.";
 
     private static final Logger logger = LogManager.getLogger(InitiativeCommand.class);
@@ -50,11 +50,12 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
             InitiativeTracker initTracker = dbService.retrieveInitiative(message.getChannel().getId());
 
+            String response;
             if(tokens.isEmpty()) {
-                return initPrinter.printInit(initTracker);
+                response = initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
+            } else {
+                response = getResponse(tokens, initTracker);
             }
-
-            String response = getResponse(tokens, initTracker);
 
             dbService.storeInitiative(message.getChannel().getId(), initTracker.getInit());
 
@@ -86,10 +87,10 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
                 break;
             case "next":
             case "n":
-                return next(tokens, initTracker);
+                return adjust(tokens, initTracker, 1);
             case "previous":
             case "p":
-                return previous(initTracker);
+                return adjust(tokens, initTracker, -1);
             case "kill":
             case "k":
                 return kill(tokens, initTracker);
@@ -150,29 +151,26 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
 
-    private String next(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+    private String adjust(List<String> tokens, InitiativeTracker initTracker, int operator) throws BadArgumentException {
+        if(initTracker.getInit().isEmpty()) {
+            throw new BadArgumentException(EMPTY_INIT_MSG);
+        }
+
 
         if(tokens.size() == 0) {
-            initTracker.adjustTurn(1, "");
+            initTracker.adjustTurn(operator * 1, "");
         } else if(tokens.size() == 1 && tokens.get(0).matches(NUMERIC_RGX)) {
-            initTracker.adjustTurn(Integer.valueOf(tokens.get(0)), "");
+            initTracker.adjustTurn(operator * Integer.valueOf(tokens.get(0)), "");
         } else {
             Iterator<String> tokenItr = tokens.iterator();
             parser.processArguments(tokens.iterator(), (token, left, right) -> {
-                initTracker.adjustTurn(DiceProcessor.getTotal(left, right), token);
+                initTracker.adjustTurn(operator * DiceProcessor.getTotal(left, right), token);
                 return true;
             });
         }
 
         return initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
     }
-
-
-    private String previous(InitiativeTracker initTracker) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 
     private String kill(List<String> tokens, InitiativeTracker initTracker) {
         // TODO Auto-generated method stub

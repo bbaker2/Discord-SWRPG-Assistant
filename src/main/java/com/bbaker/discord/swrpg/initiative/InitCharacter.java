@@ -95,7 +95,8 @@ public class InitCharacter {
 
     @Override
     public String toString() {
-        return String.format("%4s [%2d %2d %5s %2d] '%s'", type.name(), success, advantage, usesOrder, order, label);
+        return String.format("\n"
+                + "%4s, Round: %2d [%2d %2d %5s %2d] '%s'", type.name(), round, success, advantage, usesOrder, order, label);
     }
 
 
