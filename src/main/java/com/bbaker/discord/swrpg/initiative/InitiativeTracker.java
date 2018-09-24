@@ -26,7 +26,7 @@ public class InitiativeTracker {
 
     private void cacheSelf() {
         this.round = init.isEmpty() ? 1 : init.get(0).getRound();
-        this.turn = 0;
+        this.turn = 1;
         this.canRoll = true;
         for(InitCharacter c : init) {
             if(c.getRound() <= round) {
@@ -67,14 +67,18 @@ public class InitiativeTracker {
     }
 
     public void adjustTurn(int adjustment, String label) {
-        int max = init.size();
+        int max = init.size()+1;
         int unsafeTurn = turn + adjustment;
         int oldTurn = turn;
+                
         round += unsafeTurn / max;
-        turn = unsafeTurn % max;
+        turn = Math.max(1, unsafeTurn % max);
 
+        
+        
+        
         InitCharacter c;
-        for(int i = 0; i < max; i++) {
+        for(int i = 0; i < init.size(); i++) {
             c = init.get(i);
             // All characters before the target turn should be updated to the primary round
             if(i < turn-1) { // since turns start at 1 and arrays start at 0, we adjust the turn to match array indexes
@@ -84,8 +88,15 @@ public class InitiativeTracker {
                 c.setRound(round - 1);
             }
 
-            if(i > oldTurn -1 && i <= turn - 1) {
-                c.setLabel(label);
+            // old = 1, new = 3
+            if(oldTurn >= turn) {
+            	if(i > oldTurn - 1 || i <= turn - 1) {
+            		c.setLabel(label);
+            	}            
+            } else {
+            	if(i >= turn-1 && i < oldTurn-1) {
+            		c.setLabel(label);
+            	}
             }
         }
     }

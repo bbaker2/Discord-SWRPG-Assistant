@@ -139,20 +139,32 @@ class InitiativeCommandTest extends CommonUtils {
             new InitCharacter("1st", 0, 0, 2, CharacterType.PC)
         ));
 
+        initCommand.handleInit(genMsg("!i"));
+        verify(initPrinter, description("Starting with Round 1, Turn 1")).printRoundTurn(1, 1);
+        
         initCommand.handleInit(genMsg("!i n"));
-        verify(initPrinter, description("Round 1, Turn 1")).printRoundTurn(1, 1);
+        verify(initPrinter, description("one next = Round 1, Turn 2")).printRoundTurn(1, 2);
 
         initCommand.handleInit(genMsg("!i n 2"));
-        verify(initPrinter, description("Round 1, Turn 3")).printRoundTurn(1, 3);
+        verify(initPrinter, description("two nexts = Round 1, Turn 4")).printRoundTurn(1, 4);
 
-        initCommand.handleInit(genMsg("!i n"));
-        verify(initPrinter, description("Round 1, Turn 1")).printRoundTurn(1, 1);
-//
-//        initCommand.handleInit(genMsg("!i n"));
-//        verify(initPrinter, description("Round 1, Turn 1")).printRoundTurn(1, 1);
-//
-//        initCommand.handleInit(genMsg("!i n"));
-//        verify(initPrinter, description("Round 1, Turn 1")).printRoundTurn(1, 1);
+        initCommand.handleInit(genMsg("!i n luke"));
+        verify(initPrinter, description("one next w/ luke label = Round 2, Turn 1")).printRoundTurn(2, 1);
+        verify(dbService, atLeastOnce().description("Make sure the luke label was saved"))
+        	.storeInitiative(anyLong(), argThat(characters -> "luke".equals(characters.get(0).getLabel())));
+        System.out.println(init);
+
+        initCommand.handleInit(genMsg("!i n stormtrooper2"));
+        System.out.println(init);
+        verify(initPrinter, description("two nexts w/ labels = Round 2, Turn 3")).printRoundTurn(2, 3);
+        verify(dbService, atLeastOnce().description("Make sure the stormtrooper label was saved"))
+    		.storeInitiative(anyLong(), argThat(characters -> 
+    			"luke".equals(characters.get(0).getLabel()) &&
+    			"stormtrooper".equals(characters.get(1).getLabel()) &&
+    			"stormtrooper".equals(characters.get(2).getLabel())
+			));
+        System.out.println(init);
+        
     }
 
 

@@ -49,12 +49,13 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
             List<String> tokens = getList(message.getContent());
 
             InitiativeTracker initTracker = dbService.retrieveInitiative(message.getChannel().getId());
-
+            
+            String response;
             if(tokens.isEmpty()) {
-                return initPrinter.printInit(initTracker);
+                response = initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
+            } else {
+            	response = getResponse(tokens, initTracker);
             }
-
-            String response = getResponse(tokens, initTracker);
 
             dbService.storeInitiative(message.getChannel().getId(), initTracker.getInit());
 
