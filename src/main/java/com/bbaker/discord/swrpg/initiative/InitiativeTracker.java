@@ -61,7 +61,6 @@ public class InitiativeTracker {
 
         InitCharacter c;
         for(int step = 0; step < Math.abs(adjustment); step++) {
-            c = init.get(initMeta.turn-1);
             initMeta.turn += direction;
 
 
@@ -73,6 +72,7 @@ public class InitiativeTracker {
                 initMeta.round++;
             }
 
+            c = init.get(initMeta.turn-1);
             c.setLabel(label);
         }
 

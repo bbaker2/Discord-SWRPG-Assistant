@@ -44,7 +44,7 @@ class InitiativeCommandTest extends CommonUtils {
         initMeta = new InitTrackerMeta(DatabaseService.IS_NEW, 1, 1, false);
         doAnswer(invocation -> new InitiativeTracker(init, initMeta)).when(dbService).retrieveInitiative(anyLong());
         // for storing inits
-        doAnswer(invocation -> init = (List<InitCharacter>)invocation.getArgument(1))
+        doAnswer(invocation -> init = ((InitiativeTracker)invocation.getArgument(1)).getInit())
             .when(dbService).storeInitiative(anyLong(), any());
 
         initPrinter = mock(InitiativePrinter.class);
@@ -199,7 +199,7 @@ class InitiativeCommandTest extends CommonUtils {
 
     @Test
     public void previousTest() {
-        preloadInit(8, 2);
+        preloadInit(8, 1);
 
         initCommand.handleInit(genMsg("!i"));
         verify(initPrinter, description("Starting with Round 8, Turn 1")).printRoundTurn(8, 1);
