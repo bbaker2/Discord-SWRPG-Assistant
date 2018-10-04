@@ -199,21 +199,50 @@ class InitiativeCommandTest extends CommonUtils {
 
     @Test
     public void previousTest() {
-        preloadInit(8, 1);
+        preloadInit(8, 2);
 
         initCommand.handleInit(genMsg("!i"));
-        verify(initPrinter, description("Starting with Round 8, Turn 1")).printRoundTurn(8, 1);
+        verify(initPrinter, description("Starting with Round 8, Turn 1")).printRoundTurn(8, 2);
+
+        initCommand.handleInit(genMsg("!i previous"));
+        verify(initPrinter, description("one previous = Round 8, Turn 1")).printRoundTurn(8, 1);
+
+        initCommand.handleInit(genMsg("!i p"));
+        verify(initPrinter, description("one more previous = Round 7, Turn 4")).printRoundTurn(7, 4);
+
+        initCommand.handleInit(genMsg("!i p 3"));
+        verify(initPrinter, description("3 previous = Round 7, Turn 1")).printRoundTurn(7, 1);
+
+        initCommand.handleInit(genMsg("!i p 2vadar"));
+        verify(initPrinter, description("2 previous = Round 6, Turn 2")).printRoundTurn(6, 3);
+        verify(dbService, atLeastOnce().description("Make sure the labels set correctly"))
+            .storeInitiative(anyLong(), argThat(it ->
+                "".equals(it.getInit().get(0).getLabel()) &&
+                "".equals(it.getInit().get(1).getLabel()) &&
+                "vadar".equals(it.getInit().get(2).getLabel()) &&
+                "vadar".equals(it.getInit().get(3).getLabel())
+        ));
+
+        initCommand.handleInit(genMsg("!i p 1anikin2"));
+        verify(initPrinter, description("3 previous = Round 5, Turn 4")).printRoundTurn(5, 4);
+        verify(dbService, atLeastOnce().description("Make sure the labels wrapped correctly"))
+            .storeInitiative(anyLong(), argThat(it ->
+                "anikin".equals(it.getInit().get(0).getLabel()) &&
+                "anikin".equals(it.getInit().get(1).getLabel()) &&
+                "vadar".equals(it.getInit().get(2).getLabel()) &&
+                "anikin".equals(it.getInit().get(3).getLabel())
+        ));
 
     }
 
-//    @Test
+    @Test
     public void previousErrorTest() {
         String actual;
 
         actual = initCommand.handleInit(genMsg("!i p"));
         assertEquals(InitiativeCommand.EMPTY_INIT_MSG, actual, "Make sure a friendly message about not having init was returned");
 
-        preloadInit(2, 2);
+        preloadInit(1, 2);
 
         actual = initCommand.handleInit(genMsg("!i p 3"));
         assertEquals(InitiativeTracker.NEGATIVE_ROUND_MSG, actual, "Make sure a friendly message about negative rounds was returned");
