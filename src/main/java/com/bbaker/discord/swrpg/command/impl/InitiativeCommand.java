@@ -25,6 +25,7 @@ import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
 public class InitiativeCommand extends BasicCommand implements CommandExecutor {
+    public static final String ROLLS_NOT_ALLOWED_MSG = "Someone previously use the `set` command and rolls are disallowed until the initiatives are cleared";
     public static final String EMPTY_INIT_MSG = "There are no characters in the initiative. Please add some first.";
     public static final String NO_CHARACTER_MSG = "No characters were provided. Please include 'pc', 'npc', 'dpc', 'dnpc'. No changes were made to the initiative.";
     public static final String NO_DIE_MSG = "No die were provided. No changes were made to the initiative.";
@@ -57,7 +58,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
                 response = getResponse(tokens, initTracker);
             }
 
-            dbService.storeInitiative(message.getChannel().getId(), initTracker.getInit());
+            dbService.storeInitiative(message.getChannel().getId(), initTracker);
 
             return response + "\n" + initPrinter.printInit(initTracker);
         } catch (BadArgumentException e) {
@@ -104,6 +105,10 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
 
     private String rollCharacter(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+        if(!initTracker.canRoll()) {
+            throw new BadArgumentException(ROLLS_NOT_ALLOWED_MSG);
+        }
+
         // Get pc, npc, dpc, and dnpc tokens
         InitiativeProcessor initProcessor = new InitiativeProcessor();
         parser.processArguments(tokens.iterator(), initProcessor);

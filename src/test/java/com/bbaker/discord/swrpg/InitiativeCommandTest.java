@@ -18,6 +18,7 @@ import com.bbaker.discord.swrpg.command.impl.InitiativeCommand;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.initiative.CharacterType;
 import com.bbaker.discord.swrpg.initiative.InitCharacter;
+import com.bbaker.discord.swrpg.initiative.InitTrackerMeta;
 import com.bbaker.discord.swrpg.initiative.InitiativeTracker;
 import com.bbaker.discord.swrpg.printer.InitiativePrinter;
 import com.bbaker.discord.swrpg.printer.RollerPrinter;
@@ -26,6 +27,7 @@ import com.bbaker.discord.swrpg.printer.RollerPrinter;
 class InitiativeCommandTest extends CommonUtils {
 
     private List<InitCharacter> init;
+    private InitTrackerMeta initMeta;
     private InitiativeCommand initCommand;
     private InitiativePrinter initPrinter;
     private RollerPrinter rollPrinter;
@@ -38,11 +40,12 @@ class InitiativeCommandTest extends CommonUtils {
         dbService = mock(DatabaseService.class);
 
         // for retrieving inits
-        init = new ArrayList();
-        when(dbService.retrieveInitiative(anyLong())).thenReturn(new InitiativeTracker(init));
+        init = new ArrayList<InitCharacter>();
+        initMeta = new InitTrackerMeta(DatabaseService.IS_NEW, 1, 1, false);
+        doAnswer(invocation -> new InitiativeTracker(init, initMeta)).when(dbService).retrieveInitiative(anyLong());
         // for storing inits
         doAnswer(invocation -> init = (List<InitCharacter>)invocation.getArgument(1))
-            .when(dbService).storeInitiative(anyLong(), anyList());
+            .when(dbService).storeInitiative(anyLong(), any());
 
         initPrinter = mock(InitiativePrinter.class);
         rollPrinter = mock(RollerPrinter.class);
@@ -53,14 +56,17 @@ class InitiativeCommandTest extends CommonUtils {
 
     }
 
-    private void preloadInit() {
-        init.clear();
+    private void preloadInit(int round, int turn) {
+//        init.clear();
         init.addAll(Arrays.asList(
-            new InitCharacter("4th", 3, 6, 1, CharacterType.DNPC),
-            new InitCharacter("3rd", 2, 4, 1, CharacterType.NPC),
-            new InitCharacter("2nd", 1, 2, 2, CharacterType.DPC),
-            new InitCharacter("1st", 0, 0, 2, CharacterType.PC)
+            new InitCharacter("4th", 3, 6, CharacterType.DNPC),
+            new InitCharacter("3rd", 2, 4, CharacterType.NPC),
+            new InitCharacter("2nd", 1, 2, CharacterType.DPC),
+            new InitCharacter("1st", 0, 0, CharacterType.PC)
         ));
+
+        initMeta.round = round;
+        initMeta.turn = turn;
     }
 
     @Test
@@ -113,22 +119,22 @@ class InitiativeCommandTest extends CommonUtils {
         actual = initCommand.handleInit(genMsg("!r r pc"));
         assertEquals(InitiativeCommand.NO_DIE_MSG, actual, "No dice provided");
 
-        verify(dbService, never().description("At no point should the DB have been updated")).storeInitiative(anyLong(), anyList());
+        verify(dbService, never().description("At no point should the DB have been updated")).storeInitiative(anyLong(), any());
 
     }
 
     @Test
     void reOrderInitTest() {
-        preloadInit();
+        preloadInit(2, 2);
 
         initCommand.handleInit(genMsg("!i reorder pc dpc npc dnpc"));
 
         verify(dbService, description("Different types, but the success/advantage should be the same. Labels get cleared."))
             .storeInitiative(anyLong(), argThat(new ContainsCharacter(
-                new InitCharacter("", 3, 6, 1, CharacterType.PC),
-                new InitCharacter("", 2, 4, 1, CharacterType.DPC),
-                new InitCharacter("", 1, 2, 2, CharacterType.NPC),
-                new InitCharacter("", 0, 0, 2, CharacterType.DNPC)
+                new InitCharacter("", 3, 6, CharacterType.PC),
+                new InitCharacter("", 2, 4, CharacterType.DPC),
+                new InitCharacter("", 1, 2, CharacterType.NPC),
+                new InitCharacter("", 0, 0, CharacterType.DNPC)
             )));
 
         String actual = initCommand.handleInit(genMsg("!i reorder pc"));
@@ -141,11 +147,15 @@ class InitiativeCommandTest extends CommonUtils {
 
     @Test
     void nextTest() {
-        preloadInit();
+        preloadInit(1, 0);
+
+        System.out.println("======NEXT======");
 
         initCommand.handleInit(genMsg("!i"));
-        verify(initPrinter, description("Starting with Round 1, Turn 1")).printRoundTurn(1, 1);
+        verify(initPrinter, description("Starting with Round 1, Turn 0")).printRoundTurn(1, 0);
 
+        initCommand.handleInit(genMsg("!i n"));
+        verify(initPrinter, description("one next = Round 1, Turn 1")).printRoundTurn(1, 1);
         initCommand.handleInit(genMsg("!i n"));
         verify(initPrinter, description("one next = Round 1, Turn 2")).printRoundTurn(1, 2);
 
@@ -155,62 +165,65 @@ class InitiativeCommandTest extends CommonUtils {
         initCommand.handleInit(genMsg("!i n luke"));
         verify(initPrinter, description("one next w/ luke label = Round 2, Turn 1")).printRoundTurn(2, 1);
         verify(dbService, atLeastOnce().description("Make sure the luke label was saved"))
-            .storeInitiative(anyLong(), argThat(characters -> "luke".equals(characters.get(0).getLabel())));
+            .storeInitiative(anyLong(), argThat(it -> "luke".equals(it.getInit().get(0).getLabel())));
 
         initCommand.handleInit(genMsg("!i n stormtrooper2"));
         verify(initPrinter, description("two nexts w/ labels = Round 2, Turn 3")).printRoundTurn(2, 3);
         verify(dbService, atLeastOnce().description("Make sure the stormtrooper label was saved"))
-            .storeInitiative(anyLong(), argThat(characters ->
-                "luke".equals(characters.get(0).getLabel()) &&
-                "stormtrooper".equals(characters.get(1).getLabel()) &&
-                "stormtrooper".equals(characters.get(2).getLabel())
+            .storeInitiative(anyLong(), argThat(it ->
+                "luke".equals(it.getInit().get(0).getLabel()) &&
+                "stormtrooper".equals(it.getInit().get(1).getLabel()) &&
+                "stormtrooper".equals(it.getInit().get(2).getLabel())
             ));
 
         initCommand.handleInit(genMsg("!i n 2yoda"));
         verify(initPrinter, description("two yoda = Round 3, Turn 1")).printRoundTurn(3, 1);
         verify(dbService, atLeastOnce().description("Make sure the yoda label was saved"))
-            .storeInitiative(anyLong(), argThat(characters ->
-                "yoda".equals(characters.get(0).getLabel()) &&
-                "stormtrooper".equals(characters.get(1).getLabel()) &&
-                "stormtrooper".equals(characters.get(2).getLabel()) &&
-                "yoda".equals(characters.get(3).getLabel())
+            .storeInitiative(anyLong(), argThat(it ->
+                "yoda".equals(it.getInit().get(0).getLabel()) &&
+                "stormtrooper".equals(it.getInit().get(1).getLabel()) &&
+                "stormtrooper".equals(it.getInit().get(2).getLabel()) &&
+                "yoda".equals(it.getInit().get(3).getLabel())
             ));
 
         initCommand.handleInit(genMsg("!i n 3"));
         verify(initPrinter, description("three next = Round 3, Turn 4")).printRoundTurn(3, 4);
         verify(dbService, atLeastOnce().description("Make sure the next 3 lables were cleared"))
-            .storeInitiative(anyLong(), argThat(characters ->
-                "yoda".equals(characters.get(0).getLabel()) &&
-                "".equals(characters.get(1).getLabel()) &&
-                "".equals(characters.get(2).getLabel()) &&
-                "".equals(characters.get(3).getLabel())
+            .storeInitiative(anyLong(), argThat(it ->
+                "yoda".equals(it.getInit().get(0).getLabel()) &&
+                "".equals(it.getInit().get(1).getLabel()) &&
+                "".equals(it.getInit().get(2).getLabel()) &&
+                "".equals(it.getInit().get(3).getLabel())
             ));
     }
 
     @Test
     public void previousTest() {
-        preloadInit();
-        init.forEach(c -> c.setRound(8)); // Start the init on round 8
+        preloadInit(8, 2);
+
+        initCommand.handleInit(genMsg("!i"));
+        verify(initPrinter, description("Starting with Round 8, Turn 1")).printRoundTurn(8, 1);
 
     }
 
-    @Test
+//    @Test
     public void previousErrorTest() {
         String actual;
 
         actual = initCommand.handleInit(genMsg("!i p"));
         assertEquals(InitiativeCommand.EMPTY_INIT_MSG, actual, "Make sure a friendly message about not having init was returned");
 
-        preloadInit();
+        preloadInit(2, 2);
 
-        actual = initCommand.handleInit(genMsg("!i p"));
+        actual = initCommand.handleInit(genMsg("!i p 3"));
         assertEquals(InitiativeTracker.NEGATIVE_ROUND_MSG, actual, "Make sure a friendly message about negative rounds was returned");
+
         verify(dbService, never().description("The db should never be called since an error was thrown"))
             .storeInitiative(anyLong(), any());
     }
 
 
-    private class ContainsCharacter implements ArgumentMatcher<List<InitCharacter>> {
+    private class ContainsCharacter implements ArgumentMatcher<InitiativeTracker> {
         private InitCharacter[] expected;
 
         public ContainsCharacter(InitCharacter... characters) {
@@ -218,7 +231,8 @@ class InitiativeCommandTest extends CommonUtils {
         }
 
         @Override
-        public boolean matches(List<InitCharacter> actual) {
+        public boolean matches(InitiativeTracker actualIt) {
+            List<InitCharacter> actual = actualIt.getInit();
             if(expected.length != actual.size()) {
                 System.out.println(expected.length + " vs.  " + actual.size());
                 return false;

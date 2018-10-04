@@ -51,6 +51,6 @@ public interface DatabaseService {
      */
     InitiativeTracker retrieveInitiative(long channelId);
 
-    void storeInitiative(long channelId, List<InitCharacter> init);
+    void storeInitiative(long channelId, InitiativeTracker initTracker);
 
 }
