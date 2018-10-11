@@ -34,13 +34,17 @@ public class InitiativeProcessor implements ArgumentProcessor {
 
     private static CharacterType findCharacter(String token) {
         switch(token.toLowerCase()) {
+            case "p":
             case "pc":
                 return CharacterType.PC;
+            case "n":
             case "npc":
                 return CharacterType.NPC;
+            case "dp":
             case "dpc":
             case "deadpc":
                 return CharacterType.DPC;
+            case "dn":
             case "dnpc":
             case "deadnpc":
                 return CharacterType.DNPC;

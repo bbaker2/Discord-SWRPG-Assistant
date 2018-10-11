@@ -178,8 +178,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
     private String kill(List<String> tokens, InitiativeTracker initTracker) {
-        // TODO Auto-generated method stub
-        return null;
+        return "Not yet supported";
     }
 
 
@@ -211,8 +210,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
 
     private String revive(List<String> tokens, InitiativeTracker initTracker) {
-        // TODO Auto-generated method stub
-        return null;
+        return "Not yet supported";
     }
 
     private String format(String template, int index) {

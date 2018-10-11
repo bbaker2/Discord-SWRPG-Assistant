@@ -74,7 +74,7 @@ public class InitCharacter {
     @Override
     public String toString() {
         return String.format("\n"
-                + "%4s, [%2d %2d %2d] '%s'", type.name(), success, advantage, order, label);
+                + "%4s, [(%2d, %2d) or %2d] '%s'", type.name(), success, advantage, order, label);
     }
 
 

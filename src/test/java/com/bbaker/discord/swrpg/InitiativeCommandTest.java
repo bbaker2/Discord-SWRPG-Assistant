@@ -146,6 +146,37 @@ class InitiativeCommandTest extends CommonUtils {
     }
 
     @Test
+    void setTest(){
+        preloadInit(2, 2);
+        InOrder order = inOrder(initPrinter, dbService);
+
+        initCommand.handleInit(genMsg("!i"));
+        order.verify(dbService).storeInitiative(anyLong(), argThat(new ContainsCharacter(
+                new InitCharacter("4th", 3, 6, CharacterType.DNPC),
+                new InitCharacter("3rd", 2, 4, CharacterType.NPC),
+                new InitCharacter("2nd", 1, 2, CharacterType.DPC),
+                new InitCharacter("1st", 0, 0, CharacterType.PC))
+        ));
+        order.verify(initPrinter).printInit(argThat(it -> it.canRoll() && it.getTurn() == 2));
+
+        initCommand.handleInit(genMsg("!i set nnnn"));
+        order.verify(dbService).storeInitiative(anyLong(), argThat(new ContainsCharacter(
+                new InitCharacter("", 0, CharacterType.NPC),
+                new InitCharacter("", 1, CharacterType.NPC),
+                new InitCharacter("", 2, CharacterType.NPC),
+                new InitCharacter("", 3, CharacterType.NPC))
+        ));
+        order.verify(initPrinter).printInit(argThat(it -> !it.canRoll() && it.getTurn() == 0));
+
+        initCommand.handleInit(genMsg("!i set pc2"));
+        order.verify(dbService).storeInitiative(anyLong(), argThat(new ContainsCharacter(
+                new InitCharacter("", 0, CharacterType.PC),
+                new InitCharacter("", 1, CharacterType.PC))
+        ));
+        order.verify(initPrinter).printInit(argThat(it -> !it.canRoll() && it.getTurn() == 0));
+    }
+
+    @Test
     void nextTest() {
         preloadInit(1, 0);
 

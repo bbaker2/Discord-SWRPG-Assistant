@@ -108,10 +108,10 @@ public class InitiativeTracker {
 
         for(int i = 0; i < charTypes.size(); i++) {
             this.init.add(
-                new InitCharacter("", initMeta.round, i, charTypes.get(i))
+                new InitCharacter("", i, charTypes.get(i))
             );
         }
-
+        this.initMeta.turn = 0; // Reset the turn to 0
         this.initMeta.usesOrder = !init.isEmpty(); // if everything was wiped out... then you can roll again
     }
 
