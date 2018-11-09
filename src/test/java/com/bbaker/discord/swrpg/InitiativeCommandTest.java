@@ -70,7 +70,7 @@ class InitiativeCommandTest extends CommonUtils {
     }
 
     @Test
-    void rollRegularAddTest() {
+    public void rollRegularAddTest() {
         InOrder order = inOrder(initPrinter);
 
         initCommand.handleInit(genMsg("!i r success advantage npc")); // third
@@ -110,7 +110,7 @@ class InitiativeCommandTest extends CommonUtils {
     }
 
     @Test
-    void failedRollAddTest() {
+    public void failedRollAddTest() {
         String actual;
 
         actual = initCommand.handleInit(genMsg("!i r ggg"));
@@ -124,7 +124,7 @@ class InitiativeCommandTest extends CommonUtils {
     }
 
     @Test
-    void reOrderInitTest() {
+    public void reOrderInitTest() {
         preloadInit(2, 2);
 
         initCommand.handleInit(genMsg("!i reorder pc dpc npc dnpc"));
@@ -146,7 +146,7 @@ class InitiativeCommandTest extends CommonUtils {
     }
 
     @Test
-    void setTest(){
+    public void setTest(){
         preloadInit(2, 2);
         InOrder order = inOrder(initPrinter, dbService);
 
@@ -177,7 +177,7 @@ class InitiativeCommandTest extends CommonUtils {
     }
 
     @Test
-    void nextTest() {
+    public void nextTest() {
         preloadInit(1, 0);
 
         System.out.println("======NEXT======");
