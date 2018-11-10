@@ -1,9 +1,11 @@
 package com.bbaker.discord.swrpg.command.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.OptionalInt;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +16,7 @@ import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 import com.bbaker.discord.swrpg.initiative.CharacterType;
+import com.bbaker.discord.swrpg.initiative.InitCharacter;
 import com.bbaker.discord.swrpg.initiative.InitiativeProcessor;
 import com.bbaker.discord.swrpg.initiative.InitiativeTracker;
 import com.bbaker.discord.swrpg.printer.InitiativePrinter;
@@ -25,6 +28,7 @@ import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
 public class InitiativeCommand extends BasicCommand implements CommandExecutor {
+    private static final String MISSING_KILL_MSG = "Please specify a character to kill (ie: pc or npc) or an index position to kill (starting at 1)";
     public static final String ROLLS_NOT_ALLOWED_MSG = "Someone previously use the `set` command and rolls are disallowed until the initiatives are cleared";
     public static final String EMPTY_INIT_MSG = "There are no characters in the initiative. Please add some first.";
     public static final String NO_CHARACTER_MSG = "No characters were provided. Please include 'pc', 'npc', 'dpc', 'dnpc'. No changes were made to the initiative.";
@@ -164,10 +168,9 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
         if(tokens.size() == 0) {
             initTracker.adjustTurn(operator * 1, "");
-        } else if(tokens.size() == 1 && tokens.get(0).matches(NUMERIC_RGX)) {
-            initTracker.adjustTurn(operator * Integer.valueOf(tokens.get(0)), "");
+        } else if(tokens.size() == 1 && peek(tokens).matches(NUMERIC_RGX)) {
+            initTracker.adjustTurn(operator * Integer.valueOf(pop(tokens)), "");
         } else {
-            Iterator<String> tokenItr = tokens.iterator();
             parser.processArguments(tokens.iterator(), (token, left, right) -> {
                 initTracker.adjustTurn(operator * DiceProcessor.getTotal(left, right), token);
                 return true;
@@ -177,8 +180,62 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         return initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
     }
 
-    private String kill(List<String> tokens, InitiativeTracker initTracker) {
-        return "Not yet supported";
+    private String kill(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+        List<InitCharacter> initChars = initTracker.getInit();
+        if(initChars.isEmpty()) {
+            throw new BadArgumentException(EMPTY_INIT_MSG);
+        }
+
+        if(tokens.isEmpty()) {
+            throw new BadArgumentException(MISSING_KILL_MSG);
+        } else if(tokens.size() > 1) {
+            throw new BadArgumentException("Please either provide ONE character type or ONE index position to kill");
+        }
+
+        if(peek(tokens).matches(NUMERIC_RGX)){
+            killAtIndex(Integer.valueOf(pop(tokens)));
+        } else {
+            InitiativeProcessor initProcessor = new InitiativeProcessor();
+            parser.processArguments(tokens.iterator(), initProcessor);
+            List<CharacterType> deadCharacters = initProcessor.getCharacters();
+            if(deadCharacters.isEmpty()) {
+                throw new BadArgumentException(MISSING_KILL_MSG);
+            }
+            // Loop from the back, in reverse
+            InitCharacter curChar;
+            for(int i = initChars.size()-1; i >= 0 && !deadCharacters.isEmpty(); i--) {
+                curChar = initChars.get(i);
+                // pop off
+                if(curChar.getType() == peek(deadCharacters)) {
+                    curChar.setType(reverseType(pop(deadCharacters)));
+                }
+            }
+        }
+
+        return initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
+    }
+
+    private <T> T peek(List<T> list) {
+        return list.get(0);
+    }
+
+    private <T> T pop(List<T> list) {
+        return list.remove(0);
+    }
+
+    private CharacterType reverseType(CharacterType ct) {
+        if(ct == CharacterType.NPC) {
+            return CharacterType.DNPC;
+        } else if(ct == CharacterType.PC) {
+            return CharacterType.DPC;
+        } else {
+            return ct; // assume the character is already dead
+        }
+    }
+
+
+    private void killAtIndex(int index) {
+
     }
 
 
@@ -221,6 +278,25 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         }
     }
 
+    private OptionalInt getStartingIndex(List<String> tokens) throws BadArgumentException {
+        Iterator<String> tokenItr = tokens.iterator();
+        List<Integer> foundIndexs = new ArrayList<>();
+        for(String token = null; tokenItr.hasNext(); token = tokenItr.next()) {
+            if(token.matches(NUMERIC_RGX)) {
+                foundIndexs.add(Integer.valueOf(token));
+                tokenItr.remove();
+            }
+        }
+
+        if(foundIndexs.size() > 1) {
+            throw new BadArgumentException("%d indexs were found. Only 1 (or 0) indexs are allowed", foundIndexs.size());
+        } else if(foundIndexs.isEmpty()) {
+            return OptionalInt.empty();
+        } else {
+            return OptionalInt.of(foundIndexs.get(0));
+        }
+    }
+
 
     public void setInitPrinter(InitiativePrinter initPrinter) {
         this.initPrinter = initPrinter;
@@ -228,16 +304,6 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
     public void setRollPinter(RollerPrinter rollPrinter) {
         this.rollerPrinter = rollPrinter;
-    }
-
-    private boolean isNext(String token) {
-        switch(token.toLowerCase()) {
-            case "n":
-            case "next":
-                return true;
-            default:
-                return false;
-        }
     }
 
 }
