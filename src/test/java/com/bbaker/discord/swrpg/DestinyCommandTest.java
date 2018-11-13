@@ -9,7 +9,7 @@ import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.bbaker.discord.swrpg.command.impl.DestinyCommand;
+import com.bbaker.discord.swrpg.command.DestinyCommand;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.database.JdbiService;
 import com.bbaker.discord.swrpg.destiny.DestinyTracker;

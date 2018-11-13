@@ -5,9 +5,9 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
-import com.bbaker.discord.swrpg.command.impl.DestinyCommand;
-import com.bbaker.discord.swrpg.command.impl.InitiativeCommand;
-import com.bbaker.discord.swrpg.command.impl.RollerCommands;
+import com.bbaker.discord.swrpg.command.DestinyCommand;
+import com.bbaker.discord.swrpg.command.InitiativeCommand;
+import com.bbaker.discord.swrpg.command.RollerCommands;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.database.JdbiService;
 import com.bbaker.discord.swrpg.exceptions.SetupException;

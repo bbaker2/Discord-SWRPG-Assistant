@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
-import com.bbaker.discord.swrpg.command.ArgumentProcessor;
+import com.bbaker.discord.swrpg.argument.ArgumentProcessor;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 import com.bbaker.discord.swrpg.roller.DiceProcessor;
 

@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.command.impl;
+package com.bbaker.discord.swrpg.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.Message;
 
-import com.bbaker.discord.swrpg.command.ArgumentParser;
+import com.bbaker.discord.swrpg.argument.impl.ArgumentParser;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
@@ -28,7 +28,8 @@ import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
 public class InitiativeCommand extends BasicCommand implements CommandExecutor {
-    private static final String MISSING_KILL_MSG = "Please specify a character to kill (ie: pc or npc) or an index position to kill (starting at 1)";
+    public static final String NOTHING_TO_KILL_MSG = "Please either provide ONE character type or ONE index position to kill";
+    public static final String MISSING_KILL_MSG = "Please specify a character to kill (ie: pc or npc) or an index position to kill (starting at 1)";
     public static final String ROLLS_NOT_ALLOWED_MSG = "Someone previously use the `set` command and rolls are disallowed until the initiatives are cleared";
     public static final String EMPTY_INIT_MSG = "There are no characters in the initiative. Please add some first.";
     public static final String NO_CHARACTER_MSG = "No characters were provided. Please include 'pc', 'npc', 'dpc', 'dnpc'. No changes were made to the initiative.";
@@ -181,38 +182,49 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
     private String kill(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
-        List<InitCharacter> initChars = initTracker.getInit();
-        if(initChars.isEmpty()) {
+        List<InitCharacter> activeCharacters = initTracker.getInit();
+        if(activeCharacters.isEmpty()) {
             throw new BadArgumentException(EMPTY_INIT_MSG);
         }
 
         if(tokens.isEmpty()) {
             throw new BadArgumentException(MISSING_KILL_MSG);
         } else if(tokens.size() > 1) {
-            throw new BadArgumentException("Please either provide ONE character type or ONE index position to kill");
+            throw new BadArgumentException(NOTHING_TO_KILL_MSG);
         }
 
+        String response;
         if(peek(tokens).matches(NUMERIC_RGX)){
-            killAtIndex(Integer.valueOf(pop(tokens)));
+            response = killAtPosition(activeCharacters, Integer.valueOf(pop(tokens)));
         } else {
             InitiativeProcessor initProcessor = new InitiativeProcessor();
             parser.processArguments(tokens.iterator(), initProcessor);
             List<CharacterType> deadCharacters = initProcessor.getCharacters();
+
             if(deadCharacters.isEmpty()) {
                 throw new BadArgumentException(MISSING_KILL_MSG);
             }
+
+            CharacterType toKill = peek(deadCharacters);
+            int killCount = 0;
+
             // Loop from the back, in reverse
             InitCharacter curChar;
-            for(int i = initChars.size()-1; i >= 0 && !deadCharacters.isEmpty(); i--) {
-                curChar = initChars.get(i);
+            for(int i = activeCharacters.size()-1; i >= 0 && !deadCharacters.isEmpty(); i--) {
+                curChar = activeCharacters.get(i);
                 // pop off
-                if(curChar.getType() == peek(deadCharacters)) {
+                if(curChar.getType() == toKill) {
                     curChar.setType(reverseType(pop(deadCharacters)));
+                    killCount++;
                 }
             }
-        }
 
-        return initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
+            response = initPrinter.printTheDead(killCount, toKill);
+            if(!deadCharacters.isEmpty()) {
+                response += " " + initPrinter.skippedKillings(deadCharacters.size());
+            }
+        }
+        return response;
     }
 
     private <T> T peek(List<T> list) {
@@ -234,8 +246,11 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
 
-    private void killAtIndex(int index) {
-
+    private String killAtPosition(List<InitCharacter> activeCharacters, int index) {
+        InitCharacter curChar = activeCharacters.get(index-1);
+        CharacterType ct = curChar.getType();
+        curChar.setType(reverseType(ct));
+        return initPrinter.printTheDead(1, ct);
     }
 
 

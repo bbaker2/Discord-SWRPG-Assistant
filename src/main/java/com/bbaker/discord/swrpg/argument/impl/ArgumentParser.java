@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.command;
+package com.bbaker.discord.swrpg.argument.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,6 +7,9 @@ import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bbaker.discord.swrpg.argument.ArgumentChecker;
+import com.bbaker.discord.swrpg.argument.ArgumentEvaluator;
+import com.bbaker.discord.swrpg.argument.ArgumentProcessor;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
 public class ArgumentParser {

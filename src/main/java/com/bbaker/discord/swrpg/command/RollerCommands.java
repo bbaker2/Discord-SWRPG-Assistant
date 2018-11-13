@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.command.impl;
+package com.bbaker.discord.swrpg.command;
 
 import java.util.List;
 

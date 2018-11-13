@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.command;
+package com.bbaker.discord.swrpg.argument;
 
 import java.util.OptionalInt;
 

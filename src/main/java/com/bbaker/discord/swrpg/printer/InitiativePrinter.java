@@ -60,4 +60,16 @@ public class InitiativePrinter {
         return null;
     }
 
+
+    public String printTheDead(int i, CharacterType ct) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public String skippedKillings(int size) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

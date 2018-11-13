@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 
-import com.bbaker.discord.swrpg.command.impl.InitiativeCommand;
+import com.bbaker.discord.swrpg.command.InitiativeCommand;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.initiative.CharacterType;
 import com.bbaker.discord.swrpg.initiative.InitCharacter;
@@ -280,6 +280,77 @@ class InitiativeCommandTest extends CommonUtils {
 
         verify(dbService, never().description("The db should never be called since an error was thrown"))
             .storeInitiative(anyLong(), any());
+    }
+
+    @Test
+    public void killTest() {
+        init.addAll(Arrays.asList(
+            new InitCharacter("4th", 3, 6, CharacterType.PC),
+            new InitCharacter("3rd", 2, 4, CharacterType.NPC),
+            new InitCharacter("3rd", 2, 4, CharacterType.NPC),
+            new InitCharacter("3rd", 2, 4, CharacterType.NPC),
+            new InitCharacter("3rd", 2, 4, CharacterType.NPC),
+            new InitCharacter("2nd", 1, 2, CharacterType.PC),
+            new InitCharacter("1st", 0, 0, CharacterType.PC)
+        ));
+
+        initMeta.round = 1;
+        initMeta.turn = 1;
+
+        initCommand.handleInit(genMsg("!i kill pc"));
+        verify(initPrinter, description("killed a pc, should be the last one by default"))
+            .printTheDead(1, CharacterType.PC);
+        verify(dbService, atLeastOnce().description("The last PC should have died"))
+            .storeInitiative(anyLong(), has(
+                CharacterType.PC,
+                CharacterType.NPC,
+                CharacterType.NPC,
+                CharacterType.NPC,
+                CharacterType.NPC,
+                CharacterType.PC,
+                CharacterType.DPC)
+            );
+
+        initCommand.handleInit(genMsg("!i kill 2"));
+        verify(initPrinter, description("kill the character at index 2, in this case, an NPC"))
+            .printTheDead(1, CharacterType.NPC);
+        verify(dbService, atLeastOnce().description("The first NPC (and index 2) should have died"))
+            .storeInitiative(anyLong(), has(
+                CharacterType.PC,
+                CharacterType.DNPC,
+                CharacterType.NPC,
+                CharacterType.NPC,
+                CharacterType.NPC,
+                CharacterType.PC,
+                CharacterType.DPC)
+            );
+
+        initCommand.handleInit(genMsg("!i kill npc2"));
+        verify(initPrinter, description("kill two NPCs, by default the last two npcs should die"))
+            .printTheDead(1, CharacterType.NPC);
+        verify(dbService, atLeastOnce().description("The last two NPC should have died"))
+            .storeInitiative(anyLong(), has(
+                CharacterType.PC,
+                CharacterType.DNPC,
+                CharacterType.NPC,
+                CharacterType.DNPC,
+                CharacterType.DNPC,
+                CharacterType.PC,
+                CharacterType.DPC)
+            );
+
+        
+        initCommand.handleInit(genMsg("!i kill npc npc "));
+    }
+
+    @Test
+    public void killErrorTest() {
+        preloadInit(1, 1);
+        initCommand.handleInit(genMsg("!i kill npc2"));
+    }
+
+    private InitiativeTracker has(CharacterType... types) {
+        return argThat(new ContainsCharacterType(types));
     }
 
 

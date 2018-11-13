@@ -1,10 +1,10 @@
-package com.bbaker.discord.swrpg.command.impl;
+package com.bbaker.discord.swrpg.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.bbaker.discord.swrpg.command.ArgumentParser;
+import com.bbaker.discord.swrpg.argument.impl.ArgumentParser;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 
 public abstract class BasicCommand {

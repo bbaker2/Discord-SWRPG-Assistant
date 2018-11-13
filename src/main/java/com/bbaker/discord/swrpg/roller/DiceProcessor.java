@@ -2,7 +2,7 @@ package com.bbaker.discord.swrpg.roller;
 
 import java.util.OptionalInt;
 
-import com.bbaker.discord.swrpg.command.ArgumentProcessor;
+import com.bbaker.discord.swrpg.argument.ArgumentProcessor;
 import com.bbaker.discord.swrpg.die.DieType;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
