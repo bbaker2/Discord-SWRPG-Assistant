@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
 
-import com.bbaker.discord.swrpg.argument.ArgumentProcessor;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
+import com.bbaker.discord.swrpg.parser.text.TextArgumentProcessor;
 import com.bbaker.discord.swrpg.roller.DiceProcessor;
 
-public class InitiativeProcessor implements ArgumentProcessor {
+public class InitiativeProcessor implements TextArgumentProcessor {
 
     private List<CharacterType> characters = new ArrayList<CharacterType>();
 

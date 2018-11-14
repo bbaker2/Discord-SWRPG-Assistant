@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.Message;
 
-import com.bbaker.discord.swrpg.argument.impl.ArgumentParser;
 import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
@@ -19,6 +18,7 @@ import com.bbaker.discord.swrpg.initiative.CharacterType;
 import com.bbaker.discord.swrpg.initiative.InitCharacter;
 import com.bbaker.discord.swrpg.initiative.InitiativeProcessor;
 import com.bbaker.discord.swrpg.initiative.InitiativeTracker;
+import com.bbaker.discord.swrpg.parser.text.TextArgumentParser;
 import com.bbaker.discord.swrpg.printer.InitiativePrinter;
 import com.bbaker.discord.swrpg.printer.RollerPrinter;
 import com.bbaker.discord.swrpg.roller.DiceProcessor;
@@ -45,7 +45,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         super(dbService);
         initPrinter = new InitiativePrinter();
         rollerPrinter = new RollerPrinter();
-        parser = new ArgumentParser();
+        parser = new TextArgumentParser();
     }
 
 

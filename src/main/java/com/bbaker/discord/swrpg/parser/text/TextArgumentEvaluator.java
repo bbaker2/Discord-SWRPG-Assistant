@@ -1,10 +1,10 @@
-package com.bbaker.discord.swrpg.argument;
+package com.bbaker.discord.swrpg.parser.text;
 
 import java.util.OptionalInt;
 
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
-public interface ArgumentEvaluator {
+public interface TextArgumentEvaluator {
 
     /**
      * @param token the string token

@@ -1,4 +1,4 @@
-package com.bbaker.discord.swrpg.argument.impl;
+package com.bbaker.discord.swrpg.parser.text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,12 +7,9 @@ import java.util.OptionalInt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.bbaker.discord.swrpg.argument.ArgumentChecker;
-import com.bbaker.discord.swrpg.argument.ArgumentEvaluator;
-import com.bbaker.discord.swrpg.argument.ArgumentProcessor;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 
-public class ArgumentParser {
+public class TextArgumentParser {
 
     private static final Pattern diceRgx = Pattern.compile("(\\d+)?([A-Za-z]+)(\\d+)?");
     private static final int LEFT_COUNT = 1;
@@ -20,12 +17,12 @@ public class ArgumentParser {
     private static final int RIGHT_COUNT = 3;
 
 
-    public boolean processArguments(Iterator<String> args, ArgumentEvaluator eval) throws BadArgumentException {
+    public boolean processArguments(Iterator<String> args, TextArgumentEvaluator eval) throws BadArgumentException {
         return processArguments(args, (token)->true, eval);
     }
 
-    public boolean processArguments(Iterator<String> args, ArgumentChecker checker, ArgumentEvaluator eval) throws BadArgumentException {
-        return processArguments(args, new ArgumentProcessor() {
+    public boolean processArguments(Iterator<String> args, TextArgumentChecker checker, TextArgumentEvaluator eval) throws BadArgumentException {
+        return processArguments(args, new TextArgumentProcessor() {
 
             @Override
             public boolean isToken(String token) {
@@ -39,7 +36,7 @@ public class ArgumentParser {
         });
     }
 
-    public boolean processArguments(Iterator<String> args, ArgumentProcessor processor) throws BadArgumentException {
+    public boolean processArguments(Iterator<String> args, TextArgumentProcessor processor) throws BadArgumentException {
         boolean allRemoved = true;
         Matcher m; String token; OptionalInt leftNum; OptionalInt rightNum; boolean success;
         while(args.hasNext()) {
@@ -74,7 +71,7 @@ public class ArgumentParser {
      * @return TRUE if ALL characters can be converted to a die. Otherwise FALSE
      * @throws BadArgumentException
      */
-    private boolean tryAgain(String value, ArgumentProcessor process) throws BadArgumentException {
+    private boolean tryAgain(String value, TextArgumentProcessor process) throws BadArgumentException {
         char[] splitUp = value.toCharArray();
         List<String> tokens = new ArrayList<String>();
         String token;
