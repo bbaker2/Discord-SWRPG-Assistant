@@ -6,6 +6,7 @@ import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.SortedSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,9 +16,11 @@ import com.bbaker.discord.swrpg.database.DatabaseService;
 import com.bbaker.discord.swrpg.die.RollableDie;
 import com.bbaker.discord.swrpg.exceptions.BadArgumentException;
 import com.bbaker.discord.swrpg.initiative.CharacterType;
+import com.bbaker.discord.swrpg.initiative.IndexProcessor;
 import com.bbaker.discord.swrpg.initiative.InitCharacter;
 import com.bbaker.discord.swrpg.initiative.InitiativeProcessor;
 import com.bbaker.discord.swrpg.initiative.InitiativeTracker;
+import com.bbaker.discord.swrpg.parser.integer.IntegerArgumentParser;
 import com.bbaker.discord.swrpg.parser.text.TextArgumentParser;
 import com.bbaker.discord.swrpg.printer.InitiativePrinter;
 import com.bbaker.discord.swrpg.printer.RollerPrinter;
@@ -39,6 +42,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     private static final String NUMERIC_RGX = "[0-9]+";
     RollerPrinter rollerPrinter;
     InitiativePrinter initPrinter;
+    IntegerArgumentParser indexParser;
 
 
     public InitiativeCommand(DatabaseService dbService) {
@@ -46,6 +50,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         initPrinter = new InitiativePrinter();
         rollerPrinter = new RollerPrinter();
         parser = new TextArgumentParser();
+        indexParser = new IntegerArgumentParser();
     }
 
 
@@ -99,7 +104,8 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
                 return adjust(tokens, initTracker, -1);
             case "kill":
             case "k":
-                return kill(tokens, initTracker);
+                kill(tokens, initTracker);
+                break;
             case "revive":
                 return revive(tokens, initTracker);
         }
@@ -181,7 +187,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         return initPrinter.printRoundTurn(initTracker.getRound(), initTracker.getTurn());
     }
 
-    private String kill(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
+    private void kill(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
         List<InitCharacter> activeCharacters = initTracker.getInit();
         if(activeCharacters.isEmpty()) {
             throw new BadArgumentException(EMPTY_INIT_MSG);
@@ -189,43 +195,48 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
         if(tokens.isEmpty()) {
             throw new BadArgumentException(MISSING_KILL_MSG);
-        } else if(tokens.size() > 1) {
-            throw new BadArgumentException(NOTHING_TO_KILL_MSG);
         }
 
-        String response;
-        if(peek(tokens).matches(NUMERIC_RGX)){
-            response = killAtPosition(activeCharacters, Integer.valueOf(pop(tokens)));
-        } else {
-            InitiativeProcessor initProcessor = new InitiativeProcessor();
-            parser.processArguments(tokens.iterator(), initProcessor);
-            List<CharacterType> deadCharacters = initProcessor.getCharacters();
+        killByPosition(tokens, activeCharacters);
 
-            if(deadCharacters.isEmpty()) {
-                throw new BadArgumentException(MISSING_KILL_MSG);
-            }
-
-            CharacterType toKill = peek(deadCharacters);
-            int killCount = 0;
-
-            // Loop from the back, in reverse
-            InitCharacter curChar;
-            for(int i = activeCharacters.size()-1; i >= 0 && !deadCharacters.isEmpty(); i--) {
-                curChar = activeCharacters.get(i);
-                // pop off
-                if(curChar.getType() == toKill) {
-                    curChar.setType(reverseType(pop(deadCharacters)));
-                    killCount++;
-                }
-            }
-
-            response = initPrinter.printTheDead(killCount, toKill);
-            if(!deadCharacters.isEmpty()) {
-                response += " " + initPrinter.skippedKillings(deadCharacters.size());
-            }
-        }
-        return response;
+        killByType(tokens, activeCharacters);
     }
+
+
+    private void killByType(List<String> tokens, List<InitCharacter> activeCharacters) throws BadArgumentException {
+        InitiativeProcessor initProcessor = new InitiativeProcessor();
+        parser.processArguments(tokens.iterator(), initProcessor);
+        List<CharacterType> deadCharacters = initProcessor.getCharacters();
+
+        for(CharacterType toKill : deadCharacters) {
+            searchAndKill(toKill, activeCharacters);
+        }
+    }
+
+
+    private void killByPosition(List<String> tokens, List<InitCharacter> activeCharacters) throws BadArgumentException {
+        IndexProcessor indexEvalutor = new IndexProcessor();
+        indexParser.processArguments(tokens.iterator(), indexEvalutor);
+        SortedSet<Integer> indexs = indexEvalutor.getIndexs();
+
+
+        if(!indexs.isEmpty()) {
+            for(int i : indexs) {
+                killAtIndex(activeCharacters, i-1);
+            }
+        }
+    }
+
+    private void searchAndKill(CharacterType target, List<InitCharacter> activeCharacters) throws BadArgumentException {
+        for(int i = activeCharacters.size()-1; i > 0; i--) {
+            if(activeCharacters.get(i).getType() == target) {
+                killAtIndex(activeCharacters, i);
+                return;
+            }
+        }
+        throw new BadArgumentException("Unable to find %s to kill", target);
+    }
+
 
     private <T> T peek(List<T> list) {
         return list.get(0);
@@ -246,11 +257,15 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
     }
 
 
-    private String killAtPosition(List<InitCharacter> activeCharacters, int index) {
-        InitCharacter curChar = activeCharacters.get(index-1);
+    private void killAtIndex(List<InitCharacter> activeCharacters, int index) throws BadArgumentException {
+
+        if(index < 0 || index > activeCharacters.size()) {
+            throw new BadArgumentException("No characters found at position %d", index+1);
+        }
+
+        InitCharacter curChar = activeCharacters.get(index);
         CharacterType ct = curChar.getType();
         curChar.setType(reverseType(ct));
-        return initPrinter.printTheDead(1, ct);
     }
 
 

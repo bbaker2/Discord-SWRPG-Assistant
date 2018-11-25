@@ -11,8 +11,9 @@ public class IntegerArgumentParser {
 
     public void processArguments(Iterator<String> args, IntegerArgumentEvaluator evaluator) throws BadArgumentException {
 
-        boolean successful = false;
-        for(String token = null; args.hasNext(); token = args.next()) {
+        boolean successful = false; String token = null;
+        while(args.hasNext()) {
+            token = args.next();
             if(token.matches(NUMERIC_RGX)) {
                 successful = evaluator.evaluate(Integer.valueOf(token));
                 if(successful) {

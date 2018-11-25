@@ -1,6 +1,7 @@
 package com.bbaker.discord.swrpg.printer;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import com.bbaker.discord.swrpg.initiative.InitCharacter;
 import com.bbaker.discord.swrpg.initiative.CharacterType;
@@ -68,6 +69,12 @@ public class InitiativePrinter {
 
 
     public String skippedKillings(int size) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public String killedAtIndexs(SortedSet<Integer> indexs) {
         // TODO Auto-generated method stub
         return null;
     }
