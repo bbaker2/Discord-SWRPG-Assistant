@@ -340,7 +340,22 @@ class InitiativeCommandTest extends CommonUtils {
     @Test
     public void killErrorTest() {
         preloadInit(1, 1);
-        initCommand.handleInit(genMsg("!i kill npc2"));
+        String expected, actual;
+
+        actual = initCommand.handleInit(genMsg("!i kill npc2"));
+        expected = String.format(InitiativeCommand.TYPE_NOT_FOUND_MSG, CharacterType.NPC);
+        assertEquals(expected, actual, "One NPC killed, another not found");
+        verify(dbService, never()).storeInitiative(anyLong(), any());
+
+        actual = initCommand.handleInit(genMsg("!i kill 0"));
+        expected = String.format(InitiativeCommand.POSITION_NOT_FOUND_MSG, 0);
+        assertEquals(expected, actual, "Position 0 does not exist. (Positions start at 1)");
+        verify(dbService, never()).storeInitiative(anyLong(), any());
+
+        actual = initCommand.handleInit(genMsg("!i kill 5"));
+        expected = String.format(InitiativeCommand.POSITION_NOT_FOUND_MSG, 5);
+        assertEquals(expected, actual, "Position 5 does not exist");
+        verify(dbService, never()).storeInitiative(anyLong(), any());
     }
 
     private InitiativeTracker has(CharacterType... types) {

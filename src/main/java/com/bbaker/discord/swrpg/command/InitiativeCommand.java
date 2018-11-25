@@ -28,7 +28,8 @@ import de.btobastian.sdcf4j.Command;
 import de.btobastian.sdcf4j.CommandExecutor;
 
 public class InitiativeCommand extends BasicCommand implements CommandExecutor {
-    public static final String NOTHING_TO_KILL_MSG = "Please either provide ONE character type or ONE index position to kill";
+    public static final String POSITION_NOT_FOUND_MSG = "No characters found at position %d";
+    public static final String TYPE_NOT_FOUND_MSG = "Unable to find %s";
     public static final String MISSING_KILL_MSG = "Please specify a character to kill (ie: pc or npc) or an index position to kill (starting at 1)";
     public static final String ROLLS_NOT_ALLOWED_MSG = "Someone previously use the `set` command and rolls are disallowed until the initiatives are cleared";
     public static final String EMPTY_INIT_MSG = "There are no characters in the initiative. Please add some first.";
@@ -231,7 +232,7 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
                 return;
             }
         }
-        throw new BadArgumentException("Unable to find %s to kill", target);
+        throw new BadArgumentException(TYPE_NOT_FOUND_MSG, target);
     }
 
     private CharacterType reverseType(CharacterType ct) {
@@ -247,8 +248,8 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
 
     private void killAtIndex(List<InitCharacter> activeCharacters, int index) throws BadArgumentException {
 
-        if(index < 0 || index > activeCharacters.size()) {
-            throw new BadArgumentException("No characters found at position %d", index+1);
+        if(index < 0 || index >= activeCharacters.size()) {
+            throw new BadArgumentException(POSITION_NOT_FOUND_MSG, index+1);
         }
 
         InitCharacter curChar = activeCharacters.get(index);
