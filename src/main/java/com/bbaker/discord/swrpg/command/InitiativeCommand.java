@@ -1,11 +1,8 @@
 package com.bbaker.discord.swrpg.command;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.SortedSet;
 
 import org.apache.logging.log4j.LogManager;
@@ -237,15 +234,6 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         throw new BadArgumentException("Unable to find %s to kill", target);
     }
 
-
-    private <T> T peek(List<T> list) {
-        return list.get(0);
-    }
-
-    private <T> T pop(List<T> list) {
-        return list.remove(0);
-    }
-
     private CharacterType reverseType(CharacterType ct) {
         if(ct == CharacterType.NPC) {
             return CharacterType.DNPC;
@@ -268,6 +256,13 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
         curChar.setType(reverseType(ct));
     }
 
+    private <T> T peek(List<T> list) {
+        return list.get(0);
+    }
+
+    private <T> T pop(List<T> list) {
+        return list.remove(0);
+    }
 
     private String reorder(List<String> tokens, InitiativeTracker initTracker) throws BadArgumentException {
         // Get pc, npc, dpc, and dnpc tokens
@@ -307,26 +302,6 @@ public class InitiativeCommand extends BasicCommand implements CommandExecutor {
             return template;
         }
     }
-
-    private OptionalInt getStartingIndex(List<String> tokens) throws BadArgumentException {
-        Iterator<String> tokenItr = tokens.iterator();
-        List<Integer> foundIndexs = new ArrayList<>();
-        for(String token = null; tokenItr.hasNext(); token = tokenItr.next()) {
-            if(token.matches(NUMERIC_RGX)) {
-                foundIndexs.add(Integer.valueOf(token));
-                tokenItr.remove();
-            }
-        }
-
-        if(foundIndexs.size() > 1) {
-            throw new BadArgumentException("%d indexs were found. Only 1 (or 0) indexs are allowed", foundIndexs.size());
-        } else if(foundIndexs.isEmpty()) {
-            return OptionalInt.empty();
-        } else {
-            return OptionalInt.of(foundIndexs.get(0));
-        }
-    }
-
 
     public void setInitPrinter(InitiativePrinter initPrinter) {
         this.initPrinter = initPrinter;
